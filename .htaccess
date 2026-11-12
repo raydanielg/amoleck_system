@@ -1,0 +1,39 @@
+# ============================================================
+# Amoleck — root .htaccess for shared hosting (docroot = project root)
+# Routes everything into public/ and hard-blocks sensitive files.
+# ============================================================
+
+Options -Indexes -MultiViews
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Pass the Authorization header through to PHP
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # --- Allow Let's Encrypt / ACME certificate challenges ---
+    RewriteRule ^\.well-known/ - [L]
+
+    # --- Serve real files that exist inside public/ (assets, build, storage symlink) ---
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # --- Hard-block everything sensitive outside public/ ---
+
+    # Hidden/dotfiles: .env, .git, .htaccess itself, .DS_Store, ...
+    RewriteRule (^|/)\. - [F,L]
+
+    # Application & dev directories must never be reachable
+    RewriteRule ^(app|bootstrap|config|database|docs|node_modules|resources|routes|storage|tests|vendor)(/|$) - [F,L,NC]
+
+    # Project files that must never be reachable
+    RewriteRule ^(artisan|composer\.(json|lock)|package(-lock)?\.json|vite\.config\.js|tailwind\.config\.js|postcss\.config\.js|phpunit\.xml|deploy\.sh|.*\.(md|sh|example|dist|sql|log))$ - [F,L,NC]
+
+    # Never expose the raw public/ path
+    RewriteRule ^public/ - [F,L]
+
+    # --- Everything else goes to the Laravel front controller ---
+    RewriteRule ^ public/index.php [L]
+</IfModule>
