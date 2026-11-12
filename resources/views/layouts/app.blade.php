@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="robots" content="noindex, nofollow">
-        <meta name="theme-color" content="#0a2540">
+        <meta name="theme-color" content="#16834A">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
         <link rel="icon" type="image/png" href="{{ asset('logo-icon.png') }}">
@@ -15,9 +15,18 @@
         <link rel="stylesheet" href="https://cdn.hugeicons.com/font/hgi-stroke-rounded.css">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script>
+            window.APP_SESSION = {
+                lifetime: {{ (int) config('session.lifetime') * 60 }},
+                warnAfter: {{ (int) config('session.lifetime') * 60 - 120 }},
+                statusUrl: '{{ route('session.status') }}',
+                reauthUrl: '{{ route('session.reauth') }}',
+            };
+        </script>
     </head>
     <body class="layout-fixed sidebar-expand-lg sidebar-mini bg-body-tertiary">
         @include('partials.toasts')
+        @include('partials.session-expired')
 
         <div class="app-wrapper">
             @include('layouts.navigation')

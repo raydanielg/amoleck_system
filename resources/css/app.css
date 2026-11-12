@@ -6,56 +6,57 @@
    White surface · deep navy identity · restrained blue accent
    ============================================================ */
 :root {
-    --brand-navy: #0a2540;
-    --brand-navy-dark: #071c33;
-    --brand-navy-soft: #eef2f7;
-    --brand-accent: #2563eb;
-    --brand-accent-dark: #1d4ed8;
-    --brand-accent-soft: #eff4ff;
-    --brand-border: #e5e7eb;
-    --brand-muted: #6b7280;
+    --brand-primary: #16834A;
+    --brand-primary-dark: #0d4a2c;
+    --brand-primary-soft: #F3FAF5;
+    --brand-accent: #16834A;
+    --brand-accent-dark: #11663B;
+    --brand-accent-soft: #EAF6EE;
+    --brand-border: #E5EBE7;
+    --brand-muted: #6B766F;
 
-    --bs-primary: #0a2540;
-    --bs-primary-rgb: 10, 37, 64;
-    --bs-primary-text-emphasis: #071c33;
-    --bs-primary-bg-subtle: #e8edf4;
-    --bs-primary-border-subtle: #c6d2e0;
-    --bs-link-color: #2563eb;
+    --bs-primary: #16834A;
+    --bs-primary-rgb: 22, 131, 74;
+    --bs-tertiary-bg: #F8FAF8;
+    --bs-primary-text-emphasis: #0d4a2c;
+    --bs-primary-bg-subtle: #e8f1ec;
+    --bs-primary-border-subtle: #c6ddd0;
+    --bs-link-color: #16834A;
     --bs-link-color-rgb: 37, 99, 235;
-    --bs-link-hover-color: #1d4ed8;
+    --bs-link-hover-color: #11663B;
     --bs-link-hover-color-rgb: 29, 78, 216;
 }
 
 body {
-    color: #1f2937;
+    color: #202B24;
 }
 
 .btn-primary {
-    --bs-btn-bg: #0a2540;
-    --bs-btn-border-color: #0a2540;
-    --bs-btn-hover-bg: #123350;
-    --bs-btn-hover-border-color: #123350;
-    --bs-btn-active-bg: #071c33;
-    --bs-btn-active-border-color: #071c33;
-    --bs-btn-disabled-bg: #0a2540;
-    --bs-btn-disabled-border-color: #0a2540;
+    --bs-btn-bg: #16834A;
+    --bs-btn-border-color: #16834A;
+    --bs-btn-hover-bg: #11663B;
+    --bs-btn-hover-border-color: #11663B;
+    --bs-btn-active-bg: #0d4a2c;
+    --bs-btn-active-border-color: #0d4a2c;
+    --bs-btn-disabled-bg: #16834A;
+    --bs-btn-disabled-border-color: #16834A;
     --bs-btn-focus-shadow-rgb: 37, 99, 235;
 }
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.12);
+    border-color: #16834A;
+    box-shadow: 0 0 0 0.2rem rgba(22, 131, 74, 0.12);
 }
 
 .form-check-input:checked {
-    background-color: #0a2540;
-    border-color: #0a2540;
+    background-color: #16834A;
+    border-color: #16834A;
 }
 
 .form-check-input:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.12);
+    border-color: #16834A;
+    box-shadow: 0 0 0 0.2rem rgba(22, 131, 74, 0.12);
 }
 
 /* ============ Authentication — split-screen experience ============ */
@@ -77,7 +78,7 @@ body {
     padding: 2.5rem 3rem;
     color: #ffffff;
     overflow: hidden;
-    background: var(--brand-navy);
+    background: var(--brand-primary);
 }
 
 .auth-brand::before {
@@ -86,7 +87,7 @@ body {
     inset: 0;
     z-index: -1;
     background:
-        linear-gradient(165deg, rgba(10, 37, 64, 0.82) 0%, rgba(7, 28, 51, 0.96) 100%),
+        linear-gradient(165deg, rgba(22, 131, 74, 0.82) 0%, rgba(17, 102, 59, 0.96) 100%),
         url('/happy-african-american-businesswoman-working-touchpad-office.jpg') center / cover no-repeat;
 }
 
@@ -133,7 +134,7 @@ body {
 
 .auth-feature i {
     font-size: 1.3rem;
-    color: #8db4f5;
+    color: #a8e0c0;
     margin-top: 0.1rem;
 }
 
@@ -157,7 +158,7 @@ body {
 }
 
 .auth-brand-foot i {
-    color: #8db4f5;
+    color: #a8e0c0;
 }
 
 .auth-main {
@@ -189,7 +190,7 @@ body {
 .auth-title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--brand-navy);
+    color: var(--brand-primary);
     margin-bottom: 0.35rem;
 }
 
@@ -212,7 +213,7 @@ body {
 }
 
 .auth-input-group:focus-within {
-    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.12);
+    box-shadow: 0 0 0 0.2rem rgba(22, 131, 74, 0.12);
 }
 
 .auth-input-group .form-control {
@@ -278,7 +279,7 @@ body {
 .pw-meter {
     height: 5px;
     border-radius: 3px;
-    background: #e5e7eb;
+    background: #E5EBE7;
     overflow: hidden;
     margin-top: 0.5rem;
 }
@@ -308,10 +309,70 @@ body {
     }
 }
 
+/* ============ Session expiry modals ============ */
+.session-modal .modal-content {
+    border: 1px solid var(--brand-border);
+    border-radius: 1rem;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+}
+
+.session-modal-dialog {
+    max-width: 400px;
+}
+
+.session-modal-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--brand-accent-soft);
+    color: var(--brand-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+}
+
+.session-modal-icon.warn {
+    background: rgba(214, 158, 36, 0.12);
+    color: #b07d1a;
+}
+
+.session-modal-title {
+    font-weight: 700;
+    color: #202B24;
+    margin-bottom: 0.35rem;
+}
+
+.session-modal-sub {
+    font-size: 0.85rem;
+    color: var(--brand-muted);
+    margin-bottom: 1.25rem;
+}
+
+.session-signout-link {
+    font-size: 0.85rem;
+    color: var(--brand-muted);
+    text-decoration: none;
+}
+
+.session-signout-link:hover {
+    color: var(--brand-primary);
+}
+
+@media (max-width: 575.98px) {
+    .session-modal .modal-dialog {
+        margin: 0.75rem;
+    }
+    .session-modal .modal-content {
+        border-radius: 0.75rem;
+    }
+}
+
 /* ============ App shell polish ============ */
 .page-title {
     font-weight: 700;
-    color: var(--brand-navy);
+    color: #202B24;
     letter-spacing: -0.01em;
 }
 
@@ -343,7 +404,7 @@ body {
 }
 
 .app-header .navbar-text {
-    color: var(--brand-navy);
+    color: var(--brand-primary);
 }
 
 .app-content-header {
@@ -361,7 +422,7 @@ body {
 .app-content .card-header {
     border-bottom: 1px solid var(--brand-border);
     font-weight: 600;
-    color: var(--brand-navy);
+    color: var(--brand-primary);
     padding: 0.85rem 1.1rem;
     border-top-left-radius: 0.75rem !important;
     border-top-right-radius: 0.75rem !important;
@@ -378,7 +439,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.045em;
     font-weight: 600;
-    color: #6b7280;
+    color: #6B766F;
     border-bottom-width: 1px;
     background: #fafbfc;
     white-space: nowrap;
@@ -522,7 +583,7 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
-    scrollbar-color: #d7dbe0 transparent;
+    scrollbar-color: #dde4df transparent;
 }
 
 .app-sidebar .sidebar-wrapper::-webkit-scrollbar {
@@ -530,7 +591,7 @@ body {
 }
 
 .app-sidebar .sidebar-wrapper::-webkit-scrollbar-thumb {
-    background: #d7dbe0;
+    background: #dde4df;
     border-radius: 10px;
 }
 
@@ -587,14 +648,14 @@ body {
 
 .user-menu:hover,
 .user-menu.show {
-    background-color: #f4f6f9;
+    background-color: #F3FAF5;
 }
 
 .user-avatar {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: var(--brand-navy);
+    background: var(--brand-primary);
     color: #ffffff;
     display: inline-flex;
     align-items: center;
@@ -603,7 +664,7 @@ body {
     font-weight: 700;
     letter-spacing: 0.02em;
     margin-right: 0.55rem;
-    box-shadow: 0 0 0 2px #dfe7f2;
+    box-shadow: 0 0 0 2px #d8eee0;
     flex-shrink: 0;
 }
 
@@ -644,11 +705,11 @@ body {
     height: 110px;
     border-radius: 50%;
     object-fit: cover;
-    box-shadow: 0 0 0 3px #dfe7f2;
+    box-shadow: 0 0 0 3px #d8eee0;
 }
 
 .profile-avatar-initials {
-    background: var(--brand-navy);
+    background: var(--brand-primary);
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -663,7 +724,7 @@ body {
     border-radius: 50%;
     object-fit: cover;
     margin-right: 0.55rem;
-    box-shadow: 0 0 0 2px #dfe7f2;
+    box-shadow: 0 0 0 2px #d8eee0;
     flex-shrink: 0;
 }
 
@@ -715,7 +776,7 @@ body {
     flex-shrink: 0;
 }
 
-.stat-icon-tint-green { background: rgba(10, 37, 64, 0.08); color: #0a2540; }
+.stat-icon-tint-green { background: rgba(22, 131, 74, 0.08); color: #16834A; }
 .stat-icon-tint-blue { background: rgba(13, 110, 253, 0.08); color: #0d6efd; }
 .stat-icon-tint-red { background: rgba(220, 53, 69, 0.08); color: #dc3545; }
 .stat-icon-tint-amber { background: rgba(255, 193, 7, 0.12); color: #b8860b; }
@@ -733,7 +794,7 @@ body {
 
 .status-issued, .status-submitted, .status-scheduled, .status-pending { background: rgba(13, 110, 253, 0.1); color: #0d6efd; }
 .status-partially_paid, .status-confirmed { background: rgba(255, 193, 7, 0.15); color: #946f00; }
-.status-paid, .status-completed, .status-approved, .status-returned_ok { background: rgba(21, 128, 61, 0.1); color: #15803d; }
+.status-paid, .status-completed, .status-approved, .status-returned_ok { background: rgba(22, 131, 74, 0.1); color: #16834A; }
 .status-rejected, .status-voided, .status-cancelled, .status-missed { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
 .status-returned, .status-draft { background: #e9ecef; color: #495057; }
 
@@ -777,9 +838,9 @@ body {
 
 /* Fulfilment mini-stepper */
 .mini-stepper { display: flex; gap: 3px; align-items: center; }
-.step-dot { flex: 1; height: 5px; border-radius: 3px; background: #e5e7eb; }
+.step-dot { flex: 1; height: 5px; border-radius: 3px; background: #E5EBE7; }
 .step-dot.done { background: #16a34a; }
-.step-dot.current { background: #2563eb; animation: stepPulse 1.5s infinite; }
+.step-dot.current { background: #16834A; animation: stepPulse 1.5s infinite; }
 @keyframes stepPulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
 
 /* Expanding-arrow CTA button (Get Started style) */

@@ -3,14 +3,14 @@
 <style>
     * { box-sizing: border-box; }
     body { font-family: "Segoe UI", system-ui, sans-serif; color:#1a1a1a; font-size:12px; margin:0; padding:24px; }
-    .head { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #0a2540; padding-bottom:10px; margin-bottom:14px; }
-    .head h1 { font-size:16px; margin:0; color:#0a2540; }
+    .head { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #16834A; padding-bottom:10px; margin-bottom:14px; }
+    .head h1 { font-size:16px; margin:0; color:#16834A; }
     .head .sub { color:#666; font-size:11px; margin-top:2px; }
     .meta { text-align:right; font-size:11px; color:#555; }
     table.dem { width:100%; border-collapse:collapse; margin-bottom:12px; }
     table.dem td { padding:3px 6px; font-size:11px; }
     table.dem .lbl { color:#777; width:14%; } table.dem .val { font-weight:600; width:19%; }
-    h2 { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#0a2540; border-bottom:1px solid #ddd; padding-bottom:3px; margin:14px 0 8px; }
+    h2 { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#16834A; border-bottom:1px solid #ddd; padding-bottom:3px; margin:14px 0 8px; }
     .field { margin-bottom:8px; }
     .field .l { font-weight:700; font-size:11px; } .field .v { white-space:pre-wrap; }
     .vitals span { display:inline-block; border:1px solid #ccc; border-radius:4px; padding:1px 8px; margin:0 6px 4px 0; }

@@ -330,6 +330,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('document-board/{announcement}/receipts', [\App\Http\Controllers\Admin\DocumentBoardController::class, 'receipts'])->name('document-board.receipts');
 });
 
+// Session heartbeat & re-authentication (session expiry UX)
+Route::get('session/status', [\App\Http\Controllers\SessionController::class, 'status'])->name('session.status');
+Route::post('session/reauth', [\App\Http\Controllers\SessionController::class, 'reauth'])
+    ->middleware('throttle:5,1')
+    ->name('session.reauth');
+
 require __DIR__.'/auth.php';
 
 // SMS delivery report webhook (secret-authenticated, no session)

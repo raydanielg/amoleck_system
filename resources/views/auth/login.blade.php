@@ -1,6 +1,6 @@
 <x-guest-layout>
     <h1 class="auth-title">{{ __('Welcome Back') }}</h1>
-    <p class="auth-sub">{{ __('Sign in to access your clinic management workspace.') }}</p>
+    <p class="auth-sub">{{ __('Sign in to access :app.', ['app' => config('app.name')]) }}</p>
 
     @if (session('status'))
         <div class="alert alert-success py-2 small">{{ session('status') }}</div>

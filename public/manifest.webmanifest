@@ -1,13 +1,13 @@
 {
-    "name": "Amoleck Group Company LTD",
-    "short_name": "Amoleck",
+    "name": "Amoleck Group Company LTD HMS",
+    "short_name": "Amoleck HMS",
     "description": "Clinic management platform — patients, appointments, billing, HR and reporting.",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",
     "orientation": "portrait-primary",
     "background_color": "#ffffff",
-    "theme_color": "#0a2540",
+    "theme_color": "#16834A",
     "icons": [
         {
             "src": "/logo-icon.png",

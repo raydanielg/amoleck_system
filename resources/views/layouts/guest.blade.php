@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="robots" content="noindex, nofollow">
-        <meta name="theme-color" content="#0a2540">
+        <meta name="theme-color" content="#16834A">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
         <link rel="icon" type="image/png" href="{{ asset('logo-icon.png') }}">
@@ -22,9 +22,15 @@
         <div class="auth-shell">
             <aside class="auth-brand d-none d-lg-flex">
                 <div>
-                    <span class="auth-brand-logo">
-                        <img src="{{ asset('amoleck-logo.png') }}" alt="{{ config('app.name', 'Laravel') }}">
-                    </span>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="auth-brand-logo">
+                            <img src="{{ asset('amoleck-logo.png') }}" alt="{{ config('app.name', 'Laravel') }}">
+                        </span>
+                        <div class="d-none d-xl-block">
+                            <div class="fw-semibold" style="font-size: 0.95rem; line-height: 1.2;">{{ config('app.name') }}</div>
+                            <div style="font-size: 0.72rem; color: rgba(255,255,255,.65);">{{ __('Healthcare Management System') }}</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="auth-brand-inner">

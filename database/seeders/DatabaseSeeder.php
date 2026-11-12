@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
         );
 
         $defaults = [
-            'clinic_name' => 'Amoleck Group Company LTD',
+            'clinic_name' => 'Amoleck Group Company LTD HMS',
             'clinic_address' => '',
             'clinic_phone' => '',
             'clinic_email' => '',
