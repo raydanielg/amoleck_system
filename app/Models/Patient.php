@@ -16,6 +16,9 @@ class Patient extends Model
         'date_of_birth',
         'phone',
         'address',
+        'occupation',
+        'religion',
+        'tribe',
         'emergency_contact_name',
         'emergency_contact_relationship',
         'emergency_contact_phone',
@@ -35,6 +38,7 @@ class Patient extends Model
         ];
     }
 
+    public function assessments(){return $this->hasMany(\App\Models\PtAssessment::class);}
     public function visits()
     {
         return $this->hasMany(Visit::class)->orderBy('visit_datetime', 'desc');

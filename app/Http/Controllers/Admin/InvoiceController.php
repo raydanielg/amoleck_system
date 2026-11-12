@@ -137,6 +137,16 @@ class InvoiceController extends Controller
         ]);
     }
 
+    public function previewFrame(Invoice $invoice)
+    {
+        $invoice->load(['items.product', 'items.service', 'patient', 'payments' => fn ($q) => $q->latest()]);
+
+        return response(view('pdf.invoice', [
+            'invoice' => $invoice,
+            'clinic' => $this->clinicBranding(),
+        ])->render())->header('Content-Type', 'text/html; charset=UTF-8');
+    }
+
     public function pdf(Invoice $invoice)
     {
         $invoice->load(['items.product', 'items.service', 'patient', 'payments' => fn ($q) => $q->latest()]);

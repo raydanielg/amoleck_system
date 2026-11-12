@@ -22,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (app()->isProduction() && str_starts_with((string) config('app.url'), 'https')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
         try {
             if (Schema::hasTable('clinic_settings')) {
                 $timezone = Settings::get('timezone');

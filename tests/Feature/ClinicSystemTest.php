@@ -196,3 +196,4 @@ class ClinicSystemTest extends TestCase
         $this->actingAs($this->staff)->get('/dashboard')->assertOk();
     }
 }
+

@@ -147,6 +147,7 @@ Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->grou
     Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
     Route::get('invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
     Route::get('invoices/{invoice}/preview', [InvoiceController::class, 'preview'])->name('invoices.preview');
+    Route::get('invoices/{invoice}/preview/frame', [InvoiceController::class, 'previewFrame'])->name('invoices.preview-frame');
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
     Route::post('invoices/{invoice}/void', [InvoiceController::class, 'void'])->name('invoices.void');
     Route::post('invoices/{invoice}/payments', [PaymentController::class, 'store'])->name('invoices.payments.store');
@@ -281,6 +282,17 @@ Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->grou
 // External document link (token-authenticated, no session)
 Route::get('docs/l/{token}', [\App\Http\Controllers\DocumentController::class, 'linkForm'])->name('documents.link');
 Route::post('docs/l/{token}', [\App\Http\Controllers\DocumentController::class, 'linkAccess'])->name('documents.link.access');
+
+// Physiotherapy assessments
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('patients/{patient}/assessments', [\App\Http\Controllers\AssessmentController::class, 'index'])->name('assessments.index');
+    Route::get('patients/{patient}/assessments/create', [\App\Http\Controllers\AssessmentController::class, 'create'])->name('assessments.create');
+    Route::post('patients/{patient}/assessments', [\App\Http\Controllers\AssessmentController::class, 'store'])->name('assessments.store');
+    Route::get('assessments/{assessment}', [\App\Http\Controllers\AssessmentController::class, 'show'])->name('assessments.show');
+    Route::get('assessments/{assessment}/edit', [\App\Http\Controllers\AssessmentController::class, 'edit'])->name('assessments.edit');
+    Route::patch('assessments/{assessment}', [\App\Http\Controllers\AssessmentController::class, 'update'])->name('assessments.update');
+    Route::get('assessments/{assessment}/print', [\App\Http\Controllers\AssessmentController::class, 'print'])->name('assessments.print');
+});
 
 // ================= Document Center & Document Board =================
 Route::middleware(['auth', 'verified'])->prefix('documents')->name('documents.')->group(function () {

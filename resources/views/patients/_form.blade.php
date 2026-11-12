@@ -36,6 +36,18 @@
         <input type="text" name="address" value="{{ old('address', $patient->address ?? '') }}" class="form-control @error('address') is-invalid @enderror">
         @error('address')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
+    <div class="col-md-4">
+        <label class="form-label">Occupation</label>
+        <input type="text" name="occupation" value="{{ old('occupation', $patient->occupation ?? '') }}" class="form-control">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Religion</label>
+        <input type="text" name="religion" value="{{ old('religion', $patient->religion ?? '') }}" class="form-control">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Tribe</label>
+        <input type="text" name="tribe" value="{{ old('tribe', $patient->tribe ?? '') }}" class="form-control">
+    </div>
 
     @if ($emergency)
         <div class="col-12"><hr class="my-1"><div class="text-muted small fw-semibold">Emergency Contact (optional)</div></div>

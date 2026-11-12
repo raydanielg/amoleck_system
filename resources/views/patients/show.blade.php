@@ -8,6 +8,11 @@
                 </a>
                 <a href="{{ route('patients.edit', $patient) }}" class="btn btn-outline-secondary btn-sm">{{ __('Edit') }}</a>
             @endif
+            @if (Auth::user()->isAdmin() || Auth::user()->hasPermission('clinical.assess') || Auth::user()->hasPermission('clinical.view'))
+                <a href="{{ route('assessments.index', $patient) }}" class="btn btn-outline-primary btn-sm">
+                    <i class="hgi-stroke hgi-file-01 me-1"></i>{{ __('Assessments') }}
+                </a>
+            @endif
             <a href="{{ route('patients.print', $patient) }}" target="_blank" class="btn btn-outline-secondary btn-sm">
                 <i class="hgi-stroke hgi-printer me-1"></i>{{ __('Print') }}
             </a>

@@ -20,9 +20,16 @@
     </style>
 </head>
 <body>
-    @php $logoPath = $clinic['clinic_logo'] ? public_path('storage/'.$clinic['clinic_logo']) : null; @endphp
+    @php
+        $logoSrc = null;
+        foreach ([$clinic['clinic_logo'] ? storage_path('app/public/'.$clinic['clinic_logo']) : null,
+                  $clinic['clinic_logo'] ? public_path('storage/'.$clinic['clinic_logo']) : null,
+                  public_path('amoleck-logo.png')] as $p) {
+            if ($p && file_exists($p)) { $logoSrc = 'data:image/'.pathinfo($p,PATHINFO_EXTENSION).';base64,'.base64_encode(file_get_contents($p)); break; }
+        }
+    @endphp
     <div class="header">
-        @if ($logoPath && file_exists($logoPath))<img src="{{ $logoPath }}" alt="">@endif
+        @if ($logoSrc)<img src="{{ $logoSrc }}" alt="">@endif
         <div class="clinic">{{ $clinic['clinic_name'] }}</div>
         <div class="muted">{{ $clinic['clinic_address'] }}{{ $clinic['clinic_phone'] ? ' · '.$clinic['clinic_phone'] : '' }}{{ $clinic['clinic_email'] ? ' · '.$clinic['clinic_email'] : '' }}</div>
         @if ($clinic['clinic_reg_number'] || $clinic['clinic_tax_id'])

@@ -17,6 +17,7 @@ class Permissions
         'receipts.print' => ['Billing', 'Print receipts and slips'],
         'messaging.send' => ['Communication', 'Send SMS to patients'],
         'clinical.view' => ['Clinical', 'View treatment records and clinical notes'],
+        'clinical.assess' => ['Clinical', 'Create and edit physiotherapy assessments'],
         'self.attendance' => ['Self-Service', 'Clock in/out and view own attendance'],
         'self.leave' => ['Self-Service', 'Apply for own leave'],
         'self.payslip' => ['Self-Service', 'View and download own payslips'],
