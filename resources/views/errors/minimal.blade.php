@@ -18,9 +18,9 @@
             border-radius: 1.25rem; background: #fff; border: 1px solid #e4e4e7;
             box-shadow: 0 8px 24px -12px rgb(0 0 0 / .15); margin-bottom: 1.5rem;
         }
-        .err-badge i { font-size: 1.9rem; color: #02481f; }
+        .err-badge i { font-size: 1.9rem; color: #0a2540; }
         .err-code { font-size: 4.5rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: #18181b; }
-        .err-code span { color: #02481f; }
+        .err-code span { color: #0a2540; }
         .err-title { font-size: 1.125rem; font-weight: 600; margin-top: .5rem; }
         .err-msg { color: #71717a; font-size: .875rem; line-height: 1.6; margin-top: .5rem; }
         .err-actions { display: flex; gap: .75rem; justify-content: center; margin-top: 1.75rem; }
@@ -29,7 +29,7 @@
             border-radius: .5rem; font-size: .875rem; font-weight: 500; text-decoration: none;
             border: 1px solid transparent; transition: all .15s;
         }
-        .btn-dark { background: #02481f; color: #fff; } .btn-dark:hover { background: #013a18; }
+        .btn-dark { background: #0a2540; color: #fff; } .btn-dark:hover { background: #123350; }
         .btn-light { background: #fff; color: #18181b; border-color: #e4e4e7; } .btn-light:hover { border-color: #a1a1aa; }
         .err-foot { margin-top: 2.5rem; font-size: .75rem; color: #a1a1aa; }
     </style>

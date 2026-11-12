@@ -1,64 +1,401 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'admin-lte/dist/css/adminlte.min.css';
 
-/* Amoleck brand green */
+/* ============================================================
+   Design system — enterprise healthcare
+   White surface · deep navy identity · restrained blue accent
+   ============================================================ */
 :root {
-    --bs-primary: #02481f;
-    --bs-primary-rgb: 2, 72, 31;
-    --bs-primary-text-emphasis: #013010;
-    --bs-primary-bg-subtle: #d9ecdf;
-    --bs-primary-border-subtle: #b3d9c0;
-    --bs-link-color: #02481f;
-    --bs-link-color-rgb: 2, 72, 31;
-    --bs-link-hover-color: #013010;
-    --bs-link-hover-color-rgb: 1, 48, 16;
+    --brand-navy: #0a2540;
+    --brand-navy-dark: #071c33;
+    --brand-navy-soft: #eef2f7;
+    --brand-accent: #2563eb;
+    --brand-accent-dark: #1d4ed8;
+    --brand-accent-soft: #eff4ff;
+    --brand-border: #e5e7eb;
+    --brand-muted: #6b7280;
+
+    --bs-primary: #0a2540;
+    --bs-primary-rgb: 10, 37, 64;
+    --bs-primary-text-emphasis: #071c33;
+    --bs-primary-bg-subtle: #e8edf4;
+    --bs-primary-border-subtle: #c6d2e0;
+    --bs-link-color: #2563eb;
+    --bs-link-color-rgb: 37, 99, 235;
+    --bs-link-hover-color: #1d4ed8;
+    --bs-link-hover-color-rgb: 29, 78, 216;
+}
+
+body {
+    color: #1f2937;
 }
 
 .btn-primary {
-    --bs-btn-bg: #02481f;
-    --bs-btn-border-color: #02481f;
-    --bs-btn-hover-bg: #013a18;
-    --bs-btn-hover-border-color: #013516;
-    --bs-btn-active-bg: #013516;
-    --bs-btn-active-border-color: #013010;
-    --bs-btn-disabled-bg: #02481f;
-    --bs-btn-disabled-border-color: #02481f;
-    --bs-btn-focus-shadow-rgb: 24, 108, 57;
+    --bs-btn-bg: #0a2540;
+    --bs-btn-border-color: #0a2540;
+    --bs-btn-hover-bg: #123350;
+    --bs-btn-hover-border-color: #123350;
+    --bs-btn-active-bg: #071c33;
+    --bs-btn-active-border-color: #071c33;
+    --bs-btn-disabled-bg: #0a2540;
+    --bs-btn-disabled-border-color: #0a2540;
+    --bs-btn-focus-shadow-rgb: 37, 99, 235;
 }
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #5a9d74;
-    box-shadow: 0 0 0 0.25rem rgba(2, 72, 31, 0.18);
+    border-color: #2563eb;
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.12);
 }
 
 .form-check-input:checked {
-    background-color: #02481f;
-    border-color: #02481f;
+    background-color: #0a2540;
+    border-color: #0a2540;
 }
 
 .form-check-input:focus {
-    border-color: #5a9d74;
-    box-shadow: 0 0 0 0.25rem rgba(2, 72, 31, 0.18);
+    border-color: #2563eb;
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.12);
 }
 
-.login-box {
-    width: 420px;
+/* ============ Authentication — split-screen experience ============ */
+.auth-page {
+    min-height: 100dvh;
+    background: #ffffff;
 }
 
-.login-page .card {
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+.auth-shell {
+    display: flex;
+    min-height: 100dvh;
 }
 
-.app-logo {
+.auth-brand {
+    position: relative;
+    isolation: isolate;
+    flex: 0 0 46%;
+    flex-direction: column;
+    padding: 2.5rem 3rem;
+    color: #ffffff;
+    overflow: hidden;
+    background: var(--brand-navy);
+}
+
+.auth-brand::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+        linear-gradient(165deg, rgba(10, 37, 64, 0.82) 0%, rgba(7, 28, 51, 0.96) 100%),
+        url('/happy-african-american-businesswoman-working-touchpad-office.jpg') center / cover no-repeat;
+}
+
+.auth-brand-logo {
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 0.75rem;
+    padding: 0.55rem 0.9rem;
+}
+
+.auth-brand-logo img {
+    height: 42px;
+    width: auto;
     display: block;
-    width: 240px;
-    max-width: 100%;
-    height: auto;
-    margin: 0 auto;
-    mix-blend-mode: multiply;
+}
+
+.auth-brand-inner {
+    max-width: 470px;
+    margin: auto 0;
+    padding: 3rem 0;
+}
+
+.auth-brand-title {
+    font-size: 1.85rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 0.75rem;
+}
+
+.auth-brand-desc {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.auth-feature {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    margin-bottom: 1.1rem;
+}
+
+.auth-feature i {
+    font-size: 1.3rem;
+    color: #8db4f5;
+    margin-top: 0.1rem;
+}
+
+.auth-feature strong {
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: block;
+}
+
+.auth-feature span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.62);
+}
+
+.auth-brand-foot {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.55);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.auth-brand-foot i {
+    color: #8db4f5;
+}
+
+.auth-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+    background: #ffffff;
+    overflow-y: auto;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-card-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.75rem;
+}
+
+.auth-card-logo img {
+    height: 48px;
+    width: auto;
+}
+
+.auth-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 0.35rem;
+}
+
+.auth-sub {
+    color: var(--brand-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.75rem;
+}
+
+.auth-field .form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.4rem;
+}
+
+.auth-input-group {
+    border-radius: 0.5rem;
+    transition: box-shadow 0.15s ease;
+}
+
+.auth-input-group:focus-within {
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.12);
+}
+
+.auth-input-group .form-control {
+    height: 46px;
+    border-color: var(--brand-border);
+    font-size: 0.9rem;
+}
+
+.auth-input-group .form-control:focus {
+    border-color: var(--brand-accent);
+    box-shadow: none;
+}
+
+.auth-input-group .input-group-text {
+    background: #ffffff;
+    border-color: var(--brand-border);
+    color: #9ca3af;
+    padding: 0 0.85rem;
+}
+
+.auth-input-group:focus-within .form-control,
+.auth-input-group:focus-within .input-group-text {
+    border-color: var(--brand-accent);
+}
+
+.auth-input-group:focus-within .input-group-text {
+    color: var(--brand-accent);
+}
+
+.pw-toggle {
+    cursor: pointer;
+    border-left: 0;
+}
+
+.pw-toggle:hover {
+    color: var(--brand-accent) !important;
+    background: #ffffff;
+}
+
+.btn-auth {
+    height: 46px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 0.5rem;
+}
+
+.auth-secure {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--brand-border);
+    font-size: 0.78rem;
+    color: var(--brand-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.auth-secure i {
+    color: var(--brand-accent);
+}
+
+.pw-meter {
+    height: 5px;
+    border-radius: 3px;
+    background: #e5e7eb;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.pw-meter > span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 3px;
+    transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.pw-meter > span[data-score='1'] { width: 33%; background: #dc3545; }
+.pw-meter > span[data-score='2'] { width: 66%; background: #f59e0b; }
+.pw-meter > span[data-score='3'] { width: 100%; background: #16a34a; }
+
+.pw-meter-label {
+    font-size: 0.72rem;
+    margin-top: 0.3rem;
+    color: var(--brand-muted);
+}
+
+@media (max-width: 991.98px) {
+    .auth-main {
+        align-items: flex-start;
+        padding-top: 3rem;
+    }
+}
+
+/* ============ App shell polish ============ */
+.page-title {
+    font-weight: 700;
+    color: var(--brand-navy);
+    letter-spacing: -0.01em;
+}
+
+.breadcrumb-app {
+    font-size: 0.78rem;
+    --bs-breadcrumb-divider: '/';
+}
+
+.breadcrumb-app .breadcrumb-item a {
+    color: var(--brand-muted);
+    text-decoration: none;
+}
+
+.breadcrumb-app .breadcrumb-item a:hover {
+    color: var(--brand-accent);
+}
+
+.breadcrumb-app .breadcrumb-item.active {
+    color: var(--brand-muted);
+}
+
+.breadcrumb-app .hgi-stroke {
+    font-size: 0.95rem;
+    vertical-align: -1px;
+}
+
+.app-header.navbar {
+    min-height: 56px;
+}
+
+.app-header .navbar-text {
+    color: var(--brand-navy);
+}
+
+.app-content-header {
+    padding-top: 0.9rem;
+    padding-bottom: 0.4rem;
+}
+
+/* Consistent card treatment across modules */
+.app-content .card {
+    border: 1px solid var(--brand-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.app-content .card-header {
+    border-bottom: 1px solid var(--brand-border);
+    font-weight: 600;
+    color: var(--brand-navy);
+    padding: 0.85rem 1.1rem;
+    border-top-left-radius: 0.75rem !important;
+    border-top-right-radius: 0.75rem !important;
+}
+
+/* Table density + header style */
+.app-content .table {
+    font-size: 0.875rem;
+    vertical-align: middle;
+}
+
+.app-content .table thead th {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.045em;
+    font-weight: 600;
+    color: #6b7280;
+    border-bottom-width: 1px;
+    background: #fafbfc;
+    white-space: nowrap;
+}
+
+.app-content .table tbody tr:hover {
+    background: #fafbfd;
+}
+
+/* Buttons: consistent radius */
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.btn-sm, .btn-group-sm > .btn {
+    border-radius: 0.4rem;
 }
 
 .app-logo-sm {
@@ -185,7 +522,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
-    scrollbar-color: #cfe3d6 transparent;
+    scrollbar-color: #d7dbe0 transparent;
 }
 
 .app-sidebar .sidebar-wrapper::-webkit-scrollbar {
@@ -193,7 +530,7 @@
 }
 
 .app-sidebar .sidebar-wrapper::-webkit-scrollbar-thumb {
-    background: #cfe3d6;
+    background: #d7dbe0;
     border-radius: 10px;
 }
 
@@ -212,13 +549,13 @@
 }
 
 .sidebar-menu .nav-link.active {
-    background-color: #f0f7f2;
-    color: #02481f;
+    background-color: var(--brand-accent-soft);
+    color: var(--brand-accent);
     font-weight: 600;
 }
 
 .sidebar-menu .nav-link.active .nav-icon {
-    color: #02481f;
+    color: var(--brand-accent);
 }
 
 /* Collapsed (mini) sidebar — icons only, hover reveals names */
@@ -250,14 +587,14 @@
 
 .user-menu:hover,
 .user-menu.show {
-    background-color: #f0f7f2;
+    background-color: #f4f6f9;
 }
 
 .user-avatar {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #02481f;
+    background: var(--brand-navy);
     color: #ffffff;
     display: inline-flex;
     align-items: center;
@@ -266,7 +603,7 @@
     font-weight: 700;
     letter-spacing: 0.02em;
     margin-right: 0.55rem;
-    box-shadow: 0 0 0 2px #d9ecdf;
+    box-shadow: 0 0 0 2px #dfe7f2;
     flex-shrink: 0;
 }
 
@@ -277,7 +614,7 @@
 
 .user-menu-role {
     font-size: 0.7rem;
-    color: #198754;
+    color: var(--brand-accent);
     font-weight: 600;
     margin-top: 2px;
 }
@@ -307,11 +644,11 @@
     height: 110px;
     border-radius: 50%;
     object-fit: cover;
-    box-shadow: 0 0 0 3px #d9ecdf;
+    box-shadow: 0 0 0 3px #dfe7f2;
 }
 
 .profile-avatar-initials {
-    background: #02481f;
+    background: var(--brand-navy);
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -326,7 +663,7 @@
     border-radius: 50%;
     object-fit: cover;
     margin-right: 0.55rem;
-    box-shadow: 0 0 0 2px #d9ecdf;
+    box-shadow: 0 0 0 2px #dfe7f2;
     flex-shrink: 0;
 }
 
@@ -378,7 +715,7 @@
     flex-shrink: 0;
 }
 
-.stat-icon-tint-green { background: rgba(2, 72, 31, 0.08); color: #02481f; }
+.stat-icon-tint-green { background: rgba(10, 37, 64, 0.08); color: #0a2540; }
 .stat-icon-tint-blue { background: rgba(13, 110, 253, 0.08); color: #0d6efd; }
 .stat-icon-tint-red { background: rgba(220, 53, 69, 0.08); color: #dc3545; }
 .stat-icon-tint-amber { background: rgba(255, 193, 7, 0.12); color: #b8860b; }
@@ -396,7 +733,7 @@
 
 .status-issued, .status-submitted, .status-scheduled, .status-pending { background: rgba(13, 110, 253, 0.1); color: #0d6efd; }
 .status-partially_paid, .status-confirmed { background: rgba(255, 193, 7, 0.15); color: #946f00; }
-.status-paid, .status-completed, .status-approved, .status-returned_ok { background: rgba(2, 72, 31, 0.1); color: #02481f; }
+.status-paid, .status-completed, .status-approved, .status-returned_ok { background: rgba(21, 128, 61, 0.1); color: #15803d; }
 .status-rejected, .status-voided, .status-cancelled, .status-missed { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
 .status-returned, .status-draft { background: #e9ecef; color: #495057; }
 

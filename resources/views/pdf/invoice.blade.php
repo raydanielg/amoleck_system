@@ -4,13 +4,13 @@
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #1f2937; margin: 0; padding: 20px 24px; }
-        .topbar { height: 6px; background: #02481f; margin-bottom: 18px; }
+        .topbar { height: 6px; background: #0a2540; margin-bottom: 18px; }
         .header { padding-bottom: 12px; margin-bottom: 14px; }
         .header img { max-height: 52px; margin-bottom: 4px; }
-        .clinic { font-size: 16px; font-weight: bold; color: #02481f; }
+        .clinic { font-size: 16px; font-weight: bold; color: #0a2540; }
         .muted { color: #6b7280; font-size: 10px; }
         .doc-title { font-size: 22px; font-weight: bold; color: #0f2a43; text-align: right; letter-spacing: 1px; }
-        .doc-title span { color: #02481f; }
+        .doc-title span { color: #0a2540; }
         table { width: 100%; border-collapse: collapse; }
         .meta td { padding: 2px 0; font-size: 10px; }
         .status { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 9px; font-weight: bold; }
@@ -21,12 +21,12 @@
         .items td { padding: 7px 8px; border-bottom: 1px solid #e5e7eb; }
         .items tr:nth-child(even) td { background: #fafbfc; }
         .right { text-align: right; }
-        .group td { background: #eaf4ee !important; color: #02481f; font-weight: bold; font-size: 9px; text-transform: uppercase; letter-spacing: .8px; padding: 5px 8px; }
+        .group td { background: #eaf4ee !important; color: #0a2540; font-weight: bold; font-size: 9px; text-transform: uppercase; letter-spacing: .8px; padding: 5px 8px; }
         .totals td { padding: 4px 8px; }
-        .grand td { font-weight: bold; font-size: 13px; color: #0f2a43; border-top: 2px solid #02481f; padding-top: 6px; }
+        .grand td { font-weight: bold; font-size: 13px; color: #0f2a43; border-top: 2px solid #0a2540; padding-top: 6px; }
         .balance td { color: #b91c1c; font-weight: bold; }
-        .pay-box { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #02481f; padding: 9px 12px; margin-top: 16px; font-size: 10px; }
-        .pay-box .t { color: #02481f; font-weight: bold; font-size: 9px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+        .pay-box { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #0a2540; padding: 9px 12px; margin-top: 16px; font-size: 10px; }
+        .pay-box .t { color: #0a2540; font-weight: bold; font-size: 9px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
         .footer { margin-top: 24px; text-align: center; font-size: 9px; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 10px; }
         .sig { margin-top: 34px; }
         .watermark { position: absolute; top: 42%; left: 20%; font-size: 60px; color: #f0fdf4; font-weight: bold; transform: rotate(-20deg); z-index: -1; }

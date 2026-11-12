@@ -146,7 +146,7 @@
                     data: {
                         labels: trend.map(t => t.label),
                         datasets: [
-                            { label: 'Revenue', data: trend.map(t => t.revenue), backgroundColor: '#02481f', borderRadius: 4 },
+                            { label: 'Revenue', data: trend.map(t => t.revenue), backgroundColor: '#0a2540', borderRadius: 4 },
                             { label: 'Expenses', data: trend.map(t => t.expenses), backgroundColor: '#dc3545', borderRadius: 4 },
                         ],
                     },

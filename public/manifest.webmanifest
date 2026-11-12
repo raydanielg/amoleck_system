@@ -1,0 +1,31 @@
+{
+    "name": "Amoleck Group Company LTD",
+    "short_name": "Amoleck",
+    "description": "Clinic management platform — patients, appointments, billing, HR and reporting.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#ffffff",
+    "theme_color": "#0a2540",
+    "icons": [
+        {
+            "src": "/logo-icon.png",
+            "sizes": "351x351",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/logo-icon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/logo-icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

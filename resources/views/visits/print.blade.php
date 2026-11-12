@@ -11,7 +11,7 @@
         table { width: 100%; border-collapse: collapse; margin-top: 6px; }
         td, th { border: 1px solid #ccc; padding: 5px 7px; text-align: left; vertical-align: top; }
         th { background: #f4f4f4; font-size: 11px; width: 25%; }
-        .header { border-bottom: 2px solid #02481f; padding-bottom: 10px; margin-bottom: 15px; }
+        .header { border-bottom: 2px solid #0a2540; padding-bottom: 10px; margin-bottom: 15px; }
         .sig { margin-top: 50px; }
     </style>
 </head>

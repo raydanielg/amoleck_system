@@ -1,2 +1,3 @@
+# Private clinic management application — no public pages to index.
 User-agent: *
-Disallow:
+Disallow: /

@@ -266,7 +266,7 @@
                         data: {
                             labels: trend.map(t => t.label),
                             datasets: [
-                                { label: 'Revenue', data: trend.map(t => t.revenue), borderColor: '#02481f', backgroundColor: 'rgba(2,72,31,0.08)', fill: true, tension: 0.3 },
+                                { label: 'Revenue', data: trend.map(t => t.revenue), borderColor: '#0a2540', backgroundColor: 'rgba(2,72,31,0.08)', fill: true, tension: 0.3 },
                                 { label: 'Expenses', data: trend.map(t => t.expenses), borderColor: '#dc3545', backgroundColor: 'rgba(220,53,69,0.06)', fill: true, tension: 0.3 },
                             ],
                         },
@@ -278,7 +278,7 @@
                         type: 'doughnut',
                         data: {
                             labels: @json($expensesByCategory->pluck('name')),
-                            datasets: [{ data: @json($expensesByCategory->pluck('total')->map(fn ($v) => (float) $v)), backgroundColor: ['#02481f', '#0d6efd', '#20c997', '#ffc107', '#dc3545', '#6f42c1', '#fd7e14', '#6c757d'] }],
+                            datasets: [{ data: @json($expensesByCategory->pluck('total')->map(fn ($v) => (float) $v)), backgroundColor: ['#0a2540', '#0d6efd', '#20c997', '#ffc107', '#dc3545', '#6f42c1', '#fd7e14', '#6c757d'] }],
                         },
                         options: { plugins: { legend: { position: 'bottom' } } },
                     });
@@ -287,7 +287,7 @@
                     const visitTrend = @json($visitTrend);
                     new Chart(document.getElementById('visitsChart'), {
                         type: 'bar',
-                        data: { labels: visitTrend.map(t => t.label), datasets: [{ label: 'Visits', data: visitTrend.map(t => t.visits), backgroundColor: '#02481f', borderRadius: 4 }] },
+                        data: { labels: visitTrend.map(t => t.label), datasets: [{ label: 'Visits', data: visitTrend.map(t => t.visits), backgroundColor: '#0a2540', borderRadius: 4 }] },
                         options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
                     });
 
@@ -302,7 +302,7 @@
                     @if ($revenueByService->isNotEmpty())
                     new Chart(document.getElementById('revenueServiceChart'), {
                         type: 'bar',
-                        data: { labels: @json($revenueByService->pluck('name')), datasets: [{ data: @json($revenueByService->pluck('total')->map(fn ($v) => (float) $v)), backgroundColor: '#02481f', borderRadius: 4 }] },
+                        data: { labels: @json($revenueByService->pluck('name')), datasets: [{ data: @json($revenueByService->pluck('total')->map(fn ($v) => (float) $v)), backgroundColor: '#0a2540', borderRadius: 4 }] },
                         options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } },
                     });
                     @endif
