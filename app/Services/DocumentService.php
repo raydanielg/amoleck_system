@@ -44,6 +44,13 @@ class DocumentService
         $caps = self::applyGrants($u, $caps, DocumentPermission::where('permissible_type', Document::class)->where('permissible_id', $doc->id)->get());
         // 3. Active shares add caps.
         $caps = self::applyGrants($u, $caps, DocumentShare::active()->where('shareable_type', Document::class)->where('shareable_id', $doc->id)->get(), true);
+        // 4. Official board attachment the user received → read access.
+        if (empty(array_intersect($caps, ['view', 'preview', 'download']))) {
+            $received = \App\Models\AnnouncementReceipt::where('user_id', $u->id)
+                ->whereHas('announcement', fn ($q) => $q->live()->whereHas('attachments', fn ($w) => $w->where('documents.id', $doc->id)))
+                ->exists();
+            if ($received) $caps = array_values(array_unique(array_merge($caps, ['view', 'preview', 'download'])));
+        }
 
         // Module-level gates: capability is useless without the base permission.
         return array_values(array_filter($caps, fn ($c) => $u->hasPermission('docs.'.$c) || in_array($c, ['view', 'preview', 'approve', 'perms'])));
@@ -196,7 +203,7 @@ class DocumentService
             'token' => Str::random(48),
             'created_by' => $u->id,
             'mode' => $opts['mode'] ?? 'download',
-            'password' => $opts['password'] ? bcrypt($opts['password']) : null,
+            'password' => !empty($opts['password']) ? bcrypt($opts['password']) : null,
             'expires_at' => $opts['expires_at'] ?? now()->addDays(7),
             'max_access' => $opts['max_access'] ?? null,
         ]);
@@ -236,8 +243,16 @@ class DocumentService
         return $a;
     }
 
+    /** Publish any due scheduled announcements (called on dashboard/board load). */
+    public static function publishDueScheduled(): void
+    {
+        $due = Announcement::where('status', 'scheduled')->where('scheduled_at', '<=', now())->get();
+        foreach ($due as $a) self::publishAnnouncement($a->creator ?? User::where('role', 'ADMIN')->first(), $a);
+    }
+
     public static function announcementsFor(User $u)
     {
+        self::publishDueScheduled();
         return Announcement::live()->orderByDesc('pinned')->orderByDesc('published_at')
             ->whereHas('receipts', fn ($q) => $q->where('user_id', $u->id));
     }

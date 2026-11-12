@@ -33,6 +33,42 @@
         </div>
     </x-slot>
 
+    {{-- Company Updates & Documents --}}
+    @php
+        $boardUser = Auth::user();
+        $updates = ($boardUser->isAdmin() || $boardUser->hasPermission('board.view'))
+            ? \App\Services\DocumentService::announcementsFor($boardUser)->with('receipts')->limit(4)->get()
+            : collect();
+        $pendingAcks = \App\Models\AnnouncementReceipt::where('user_id',$boardUser->id)
+            ->whereIn('status',['delivered','viewed'])
+            ->whereHas('announcement', fn($q)=>$q->live()->where('requires_ack',true))->count();
+    @endphp
+    @if ($updates->count() || $pendingAcks)
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span class="fw-semibold"><i class="hgi-stroke hgi-megaphone-01 me-1 text-primary"></i>Company Updates</span>
+                <div class="d-flex gap-2 align-items-center">
+                    @if ($pendingAcks)<span class="badge text-bg-warning">{{ $pendingAcks }} awaiting your acknowledgment</span>@endif
+                    <a href="{{ route('documents.board') }}" class="btn btn-sm btn-link">View all</a>
+                </div>
+            </div>
+            <div class="list-group list-group-flush">
+                @foreach ($updates as $u)
+                    @php $rc = $u->receipts->firstWhere('user_id', $boardUser->id); @endphp
+                    <a href="{{ route('documents.board.show',$u) }}" class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+                        @if ($u->pinned)<i class="hgi-stroke hgi-pin text-primary"></i>@endif
+                        <span class="badge text-bg-{{ ['normal'=>'secondary','important'=>'primary','high'=>'warning','critical'=>'danger'][$u->priority] }}">{{ ucfirst($u->priority) }}</span>
+                        <span class="flex-grow-1"><span class="fw-semibold">{{ $u->title }}</span><br><span class="small text-muted">{{ Str::limit($u->summary,80) }}</span></span>
+                        @if ($u->requires_ack)
+                            <span class="badge text-bg-{{ $rc?->status==='acknowledged'?'success':'warning' }}">{{ $rc?->status==='acknowledged' ? 'Acknowledged' : 'Ack required' }}</span>
+                        @endif
+                        <span class="small text-muted">{{ $u->published_at?->format('d M') }}</span>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     @if ($isAdmin)
         {{-- Financial KPIs --}}
         <div class="row g-3 mb-3">

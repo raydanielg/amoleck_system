@@ -249,6 +249,20 @@
                         </a>
                     </li>
                 @endif
+                @if ($isAdmin || auth()->user()->hasPermission('docs.view') || auth()->user()->hasPermission('board.view'))
+                    <li class="nav-item">
+                        <a href="{{ route('documents.index') }}" class="nav-link {{ request()->routeIs('documents.*') && !request()->routeIs('documents.board*') ? 'active' : '' }}">
+                            <i class="nav-icon hgi-stroke hgi-folder-01"></i>
+                            <p>{{ __('Office Documents') }}</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('documents.board') }}" class="nav-link {{ request()->routeIs('documents.board*') ? 'active' : '' }}">
+                            <i class="nav-icon hgi-stroke hgi-megaphone-01"></i>
+                            <p>{{ __('Company Updates') }}</p>
+                        </a>
+                    </li>
+                @endif
                 <li class="nav-item">
                     <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
                         <i class="nav-icon hgi-stroke hgi-chart"></i>

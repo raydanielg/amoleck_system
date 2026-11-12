@@ -175,9 +175,9 @@
     align-items: center;
     color: #495057;
     border-radius: 0.5rem;
-    margin: 0.15rem 0.75rem;
-    padding: 0.55rem 0.85rem;
-    font-size: 0.925rem;
+    margin: 0.05rem 0.6rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
 }
 
 .app-sidebar .sidebar-wrapper {
@@ -223,8 +223,8 @@
 
 /* Collapsed (mini) sidebar — icons only, hover reveals names */
 .sidebar-mini.sidebar-collapse .sidebar-menu .nav-link {
-    margin: 0.15rem auto;
-    padding: 0.55rem 0;
+    margin: 0.05rem auto;
+    padding: 0.4rem 0;
     justify-content: center;
 }
 
@@ -237,8 +237,9 @@
 }
 
 .nav-header {
-    padding: 0.5rem 1rem 0.25rem;
+    padding: 0.4rem 1rem 0.15rem;
 }
+.nav-header.mt-1 { margin-top: 0.35rem !important; }
 
 /* User menu */
 .user-menu {
