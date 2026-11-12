@@ -36,6 +36,22 @@ class Permissions
         'exec.branches' => ['Management & Analytics', 'View branch comparisons'],
         'exec.insights' => ['Management & Analytics', 'View and manage insights'],
         'exec.reports' => ['Management & Analytics', 'Reports center and exports'],
+        'docs.view' => ['Files & Folders', 'View authorized files and folders'],
+        'docs.upload' => ['Files & Folders', 'Upload files and new versions'],
+        'docs.folders' => ['Files & Folders', 'Create and organize folders'],
+        'docs.edit' => ['Files & Folders', 'Rename, move and tag files'],
+        'docs.download' => ['Files & Folders', 'Download files'],
+        'docs.share' => ['Files & Folders', 'Share files and folders internally'],
+        'docs.external' => ['Files & Folders', 'Create external secure links'],
+        'docs.delete' => ['Files & Folders', 'Move files to trash'],
+        'docs.restore' => ['Files & Folders', 'Restore or permanently delete files'],
+        'docs.versions' => ['Files & Folders', 'Manage and restore versions'],
+        'docs.perms' => ['Files & Folders', 'Manage file/folder permissions'],
+        'board.view' => ['Document Board', 'View announcements and official documents'],
+        'board.ack' => ['Document Board', 'Acknowledge official notices'],
+        'board.publish' => ['Document Board', 'Publish announcements and documents'],
+        'board.manage' => ['Document Board', 'Edit, schedule, pin and archive publications'],
+        'board.reports' => ['Document Board', 'View acknowledgment and delivery reports'],
     ];
 
     /** Default grants per role. Admin always has everything. */

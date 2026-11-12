@@ -443,3 +443,32 @@
 .step-dot.done { background: #16a34a; }
 .step-dot.current { background: #2563eb; animation: stepPulse 1.5s infinite; }
 @keyframes stepPulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
+/* Expanding-arrow CTA button (Get Started style) */
+.btn-arrow {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-arrow .btn-arrow-label {
+    margin-right: 2rem;
+    transition: opacity .5s;
+}
+.btn-arrow .btn-arrow-tile {
+    position: absolute;
+    top: .25rem;
+    bottom: .25rem;
+    right: .25rem;
+    width: 25%;
+    min-width: 1.75rem;
+    display: grid;
+    place-items: center;
+    border-radius: calc(var(--bs-btn-border-radius, .375rem) - 2px);
+    background: rgb(255 255 255 / .15);
+    transition: width .5s;
+}
+.btn-arrow:hover .btn-arrow-label { opacity: 0; }
+.btn-arrow:hover .btn-arrow-tile { width: calc(100% - .5rem); }
+.btn-arrow:active .btn-arrow-tile { scale: .95; }

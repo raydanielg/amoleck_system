@@ -41,7 +41,7 @@
                         <div class="d-flex justify-content-between mb-1"><span class="text-muted">Tax ({{ $taxPercent }}%)</span><span id="posTax">0.00</span></div>
                     @endif
                     <div class="d-flex justify-content-between fw-bold fs-5 mb-3"><span>Total</span><span id="posTotal">0.00</span></div>
-                    <button type="button" class="btn btn-primary w-100" id="checkoutBtn" disabled data-bs-toggle="modal" data-bs-target="#checkoutModal"><i class="hgi-stroke hgi-checkmark-circle-02 me-1"></i>Checkout</button>
+                    <button type="button" class="btn btn-primary btn-arrow w-100" id="checkoutBtn" disabled data-bs-toggle="modal" data-bs-target="#checkoutModal"><span class="btn-arrow-label"><i class="hgi-stroke hgi-checkmark-circle-02 me-1"></i>Checkout</span><span class="btn-arrow-tile"><i class="hgi-stroke hgi-arrow-right-01"></i></span></button>
                 </div>
             </div>
         </div>
@@ -82,7 +82,7 @@
                     <input type="hidden" name="items_json" id="itemsJson">
                     <div id="hiddenItems"></div>
                 </div>
-                <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Back</button><button class="btn btn-primary">Complete Sale</button></div>
+                <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Back</button><button class="btn btn-primary btn-arrow"><span class="btn-arrow-label">Complete Sale</span><span class="btn-arrow-tile"><i class="hgi-stroke hgi-arrow-right-01"></i></span></button></div>
             </form>
         </div>
     </div>

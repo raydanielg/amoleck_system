@@ -277,6 +277,47 @@ Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->grou
     Route::post('fulfilments/correct', [\App\Http\Controllers\Admin\FulfilmentController::class, 'correct'])->name('fulfilments.correct');
 });
 
+
+// External document link (token-authenticated, no session)
+Route::get('docs/l/{token}', [\App\Http\Controllers\DocumentController::class, 'linkForm'])->name('documents.link');
+Route::post('docs/l/{token}', [\App\Http\Controllers\DocumentController::class, 'linkAccess'])->name('documents.link.access');
+
+// ================= Document Center & Document Board =================
+Route::middleware(['auth', 'verified'])->prefix('documents')->name('documents.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\DocumentController::class, 'index'])->name('index');
+    Route::post('/folders', [\App\Http\Controllers\DocumentController::class, 'storeFolder'])->name('folders.store');
+    Route::post('/upload', [\App\Http\Controllers\DocumentController::class, 'upload'])->name('upload');
+    Route::get('/board', [\App\Http\Controllers\DocumentController::class, 'board'])->name('board');
+    Route::get('/board/{announcement}', [\App\Http\Controllers\DocumentController::class, 'boardShow'])->name('board.show');
+    Route::post('/board/{announcement}/acknowledge', [\App\Http\Controllers\DocumentController::class, 'acknowledge'])->name('board.ack');
+
+    Route::get('/{document}', [\App\Http\Controllers\DocumentController::class, 'show'])->name('show');
+    Route::get('/{document}/preview', [\App\Http\Controllers\DocumentController::class, 'preview'])->name('preview');
+    Route::get('/{document}/download/{version?}', [\App\Http\Controllers\DocumentController::class, 'download'])->name('download');
+    Route::patch('/{document}', [\App\Http\Controllers\DocumentController::class, 'update'])->name('update');
+    Route::post('/{document}/version', [\App\Http\Controllers\DocumentController::class, 'uploadVersion'])->name('version');
+    Route::post('/{document}/star', [\App\Http\Controllers\DocumentController::class, 'star'])->name('star');
+    Route::post('/{document}/share', [\App\Http\Controllers\DocumentController::class, 'share'])->name('share');
+    Route::post('/{document}/link', [\App\Http\Controllers\DocumentController::class, 'createLink'])->name('link.create');
+    Route::post('/{document}/permission', [\App\Http\Controllers\DocumentController::class, 'setPermission'])->name('permission');
+    Route::delete('/{document}', [\App\Http\Controllers\DocumentController::class, 'destroy'])->name('destroy');
+    Route::post('/trash/{id}/restore', [\App\Http\Controllers\DocumentController::class, 'restore'])->name('restore');
+    Route::delete('/trash/{id}', [\App\Http\Controllers\DocumentController::class, 'forceDelete'])->name('force-delete');
+    Route::post('/shares/{share}/revoke', [\App\Http\Controllers\DocumentController::class, 'revokeShare'])->name('shares.revoke');
+
+});
+
+// Admin: Document Board management
+Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('document-board', [\App\Http\Controllers\Admin\DocumentBoardController::class, 'index'])->name('document-board.index');
+    Route::post('document-board', [\App\Http\Controllers\Admin\DocumentBoardController::class, 'store'])->name('document-board.store');
+    Route::patch('document-board/{announcement}', [\App\Http\Controllers\Admin\DocumentBoardController::class, 'update'])->name('document-board.update');
+    Route::post('document-board/{announcement}/publish', [\App\Http\Controllers\Admin\DocumentBoardController::class, 'publish'])->name('document-board.publish');
+    Route::post('document-board/{announcement}/archive', [\App\Http\Controllers\Admin\DocumentBoardController::class, 'archive'])->name('document-board.archive');
+    Route::post('document-board/{announcement}/remind', [\App\Http\Controllers\Admin\DocumentBoardController::class, 'remind'])->name('document-board.remind');
+    Route::get('document-board/{announcement}/receipts', [\App\Http\Controllers\Admin\DocumentBoardController::class, 'receipts'])->name('document-board.receipts');
+});
+
 require __DIR__.'/auth.php';
 
 // SMS delivery report webhook (secret-authenticated, no session)
