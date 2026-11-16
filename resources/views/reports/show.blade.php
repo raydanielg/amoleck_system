@@ -3,6 +3,7 @@
     <x-slot name="headerActions">
         <div class="d-flex gap-2">
             <a href="{{ route('reports.export', [$type, 'csv', 'from' => $from, 'to' => $to] + request()->query()) }}" class="btn btn-outline-secondary btn-sm">CSV</a>
+            <a href="{{ route('reports.export', [$type, 'xlsx', 'from' => $from, 'to' => $to] + request()->query()) }}" class="btn btn-outline-secondary btn-sm">Excel</a>
             <a href="{{ route('reports.export', [$type, 'pdf', 'from' => $from, 'to' => $to] + request()->query()) }}" class="btn btn-outline-secondary btn-sm">PDF</a>
         </div>
     </x-slot>

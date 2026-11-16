@@ -145,6 +145,12 @@ class LeadsTest extends TestCase
         $this->actingAs($admin)->get('/reports/leads')->assertOk();
         $this->actingAs($admin)->get('/reports/leads/export/csv')->assertOk();
 
+        // Excel export returns a real .xlsx
+        $xlsx = $this->actingAs($admin)->get('/reports/leads/export/xlsx');
+        $xlsx->assertOk();
+        $xlsx->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $this->assertStringStartsWith('PK', file_get_contents($xlsx->baseResponse->getFile()->getPathname()));
+
         // Staff without leads.reports is denied both
         $user = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF, 'status' => 'active']);
         $this->actingAs($user)->get('/reports/leads')->assertForbidden();

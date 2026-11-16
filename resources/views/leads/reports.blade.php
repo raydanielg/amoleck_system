@@ -2,6 +2,7 @@
     <x-slot name="header">{{ __('Leads Reports') }}</x-slot>
     <x-slot name="headerActions">
         <a href="{{ route('reports.export', ['type' => 'leads', 'format' => 'csv', 'from' => $from, 'to' => $to]) }}" class="btn btn-sm btn-outline-secondary">Export CSV</a>
+        <a href="{{ route('reports.export', ['type' => 'leads', 'format' => 'xlsx', 'from' => $from, 'to' => $to]) }}" class="btn btn-sm btn-outline-secondary">Export Excel</a>
         <a href="{{ route('reports.export', ['type' => 'leads', 'format' => 'pdf', 'from' => $from, 'to' => $to]) }}" class="btn btn-sm btn-outline-secondary">Export PDF</a>
         <a href="{{ route('leads.dashboard') }}" class="btn btn-sm btn-outline-secondary">Dashboard</a>
     </x-slot>
