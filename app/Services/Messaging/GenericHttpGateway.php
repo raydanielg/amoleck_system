@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Http;
  */
 class GenericHttpGateway implements SmsGatewayInterface
 {
-    public function send(SmsGateway $gateway, string $phone, string $body): array
+    public function send(SmsGateway $gateway, string $phone, string $body, ?string $idempotencyKey = null): array
     {
         try {
             $response = Http::timeout($gateway->timeout_seconds ?: 15)
@@ -20,6 +20,7 @@ class GenericHttpGateway implements SmsGatewayInterface
                 ->withHeaders(array_filter([
                     'Authorization' => $gateway->api_key ? 'Bearer '.$gateway->api_key : null,
                     'X-API-Key' => $gateway->api_key,
+                    'Idempotency-Key' => $idempotencyKey,
                 ]))
                 ->post(rtrim($gateway->base_url, '/').'/'.ltrim($gateway->endpoint, '/'), [
                     'to' => $phone,

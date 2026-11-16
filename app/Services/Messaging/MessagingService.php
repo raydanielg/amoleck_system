@@ -4,7 +4,6 @@ namespace App\Services\Messaging;
 
 use App\Models\CommunicationConsent;
 use App\Models\Message;
-use App\Models\MessageTemplate;
 use App\Models\NotificationRule;
 use App\Models\SmsGateway;
 use Illuminate\Support\Str;
@@ -90,7 +89,7 @@ class MessagingService
             return $message;
         }
 
-        $result = GatewayManager::adapter($gateway)->send($gateway, $message->phone, $message->body);
+        $result = GatewayManager::adapter($gateway)->send($gateway, $message->phone, $message->body, $message->idempotency_key);
 
         $message->update([
             'provider' => $gateway->provider,

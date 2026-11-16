@@ -5,6 +5,7 @@ namespace App\Services\Messaging;
 use App\Contracts\SmsGatewayInterface;
 use App\Models\SmsGateway;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 /**
  * OASIS BulkSMS adapter (bulksms.oasistech.co.tz).
@@ -13,11 +14,12 @@ use Illuminate\Support\Facades\Http;
  */
 class OasisBulkSmsGateway implements SmsGatewayInterface
 {
-    public function send(SmsGateway $gateway, string $phone, string $body): array
+    public function send(SmsGateway $gateway, string $phone, string $body, ?string $idempotencyKey = null): array
     {
         try {
-            // Deterministic key: a retry of the same SMS never sends twice.
-            $idem = 'amoleck-'.substr(md5($phone.'|'.$body), 0, 24);
+            // Per-message key: retries of THIS message never send twice, but a new
+            // message with identical content must send again (new Message = new key).
+            $idem = $idempotencyKey ?: (string) Str::uuid();
 
             $response = Http::timeout($gateway->timeout_seconds ?: 30)
                 ->acceptJson()
@@ -129,7 +131,7 @@ class OasisBulkSmsGateway implements SmsGatewayInterface
             ?? null;
 
         $byEvent = [
-            'sms.delivered' => 'sent',
+            'sms.delivered' => 'delivered',
             'sms.pending' => 'submitted',
             'sms.failed' => 'failed',
             'sms.expired' => 'failed',

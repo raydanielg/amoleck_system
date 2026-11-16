@@ -38,7 +38,7 @@ class OasisBulkSmsGatewayTest extends TestCase
             ], 200),
         ]);
 
-        $result = (new OasisBulkSmsGateway)->send($this->gateway(), '+255712345678', 'Habari {name}');
+        $result = (new OasisBulkSmsGateway)->send($this->gateway(), '+255712345678', 'Habari {name}', 'msg-key-1');
 
         $this->assertTrue($result['accepted']);
         $this->assertSame('sent', $result['status']);
@@ -48,11 +48,23 @@ class OasisBulkSmsGatewayTest extends TestCase
         Http::assertSent(function ($request) {
             return $request->url() === 'https://bulksms.oasistech.co.tz/v1/sms'
                 && $request->hasHeader('Authorization', 'Bearer test-api-key')
-                && $request->hasHeader('Idempotency-Key')
+                && $request->hasHeader('Idempotency-Key', 'msg-key-1')
                 && $request['to'] === '+255712345678'
                 && $request['sender'] === 'AMOLECK'
                 && $request['message'] === 'Habari {name}';
         });
+    }
+
+    public function test_identical_content_sends_use_distinct_idempotency_keys(): void
+    {
+        Http::fake(['bulksms.oasistech.co.tz/*' => Http::response(['status' => 'sent', 'provider_ref' => '1'], 200)]);
+
+        $adapter = new OasisBulkSmsGateway;
+        $adapter->send($this->gateway(), '+255712345678', 'Same text');
+        $adapter->send($this->gateway(), '+255712345678', 'Same text');
+
+        $keys = collect(Http::recorded())->map(fn ($pair) => $pair[0]->header('Idempotency-Key')[0] ?? null);
+        $this->assertCount(2, $keys->unique());
     }
 
     public function test_send_marks_provider_error_as_failed(): void

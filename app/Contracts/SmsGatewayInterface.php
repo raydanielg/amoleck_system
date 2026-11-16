@@ -6,7 +6,7 @@ use App\Models\SmsGateway;
 
 interface SmsGatewayInterface
 {
-    public function send(SmsGateway $gateway, string $phone, string $body): array;
+    public function send(SmsGateway $gateway, string $phone, string $body, ?string $idempotencyKey = null): array;
 
     public function balance(SmsGateway $gateway): ?array;
 
