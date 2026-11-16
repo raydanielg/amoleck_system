@@ -4,8 +4,11 @@
     # Block access to dotfiles (.env, .git, .htaccess itself, etc.)
     RewriteRule (^|/)\.[^/]+ - [F,L]
 
-    # Block direct access to application internals even if rewrite rules above miss something
-    RewriteRule ^(app|bootstrap|config|database|docs|node_modules|routes|tests|vendor|storage)(/.*)?$ - [F,L]
+    # Block direct access to application internals even if rewrite rules above miss something.
+    # NOTE: "storage" is intentionally NOT blocked — /storage/* serves public files
+    # through the public/storage symlink (avatars, uploads). Requests below the
+    # symlink that don't exist under storage/app/public simply 404.
+    RewriteRule ^(app|bootstrap|config|database|docs|node_modules|routes|tests|vendor)(/.*)?$ - [F,L]
 
     # Everything else is served from public/ (Laravel web root)
     RewriteCond %{REQUEST_URI} !^/public/

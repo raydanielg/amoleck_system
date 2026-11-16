@@ -3,6 +3,9 @@
         Options -MultiViews -Indexes
     </IfModule>
 
+    # Required on LiteSpeed/cPanel for the public/storage symlink (avatars, uploads)
+    Options +FollowSymLinks
+
     RewriteEngine On
 
     # Handle Authorization Header
