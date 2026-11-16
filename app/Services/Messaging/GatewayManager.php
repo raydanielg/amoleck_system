@@ -9,7 +9,8 @@ class GatewayManager
 {
     private const ADAPTERS = [
         'generic' => GenericHttpGateway::class,
-        // future providers register their adapters here
+        'oasis' => OasisBulkSmsGateway::class,
+        'bulksms' => OasisBulkSmsGateway::class,
     ];
 
     public static function adapter(?SmsGateway $gateway = null): SmsGatewayInterface

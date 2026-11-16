@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SmsGateway;
 use App\Services\AuditLogger;
+use App\Services\Messaging\GatewayManager;
 use App\Services\Messaging\MessagingService;
 use Illuminate\Http\Request;
 
@@ -50,6 +51,26 @@ class GatewaySettingController extends Controller
         AuditLogger::log('sms_gateway.updated', 'sms_gateway', $gateway->id);
 
         return back()->with('success', 'Gateway settings saved.');
+    }
+
+    public function checkBalance()
+    {
+        $gateway = SmsGateway::current();
+        if (! $gateway->isConfigured()) {
+            return back()->with('error', 'Gateway is not configured — save an API key and base URL first.');
+        }
+
+        $result = GatewayManager::adapter($gateway)->balance($gateway);
+        $balance = $result['balance'] ?? null;
+
+        if ($result === null || ! is_numeric($balance)) {
+            return back()->with('error', 'Could not retrieve the credit balance from the provider.');
+        }
+
+        $gateway->update(['manual_balance' => $balance, 'balance_checked_at' => now()]);
+        AuditLogger::log('sms_gateway.balance_checked', 'sms_gateway', $gateway->id);
+
+        return back()->with('success', 'Provider credit balance: '.number_format((float) $balance, 2));
     }
 
     public function testSms(Request $request)

@@ -6,11 +6,17 @@
                 <div class="card-header bg-white fw-semibold">Provider Configuration</div>
                 <form method="POST" action="{{ route('admin.communication.gateway.update') }}" class="card-body row g-3">
                     @csrf @method('PUT')
-                    <div class="col-md-4"><label class="form-label">Provider</label><input name="provider" class="form-control" value="{{ old('provider', $gateway->provider) }}" required></div>
+                    <div class="col-md-4">
+                        <label class="form-label">Provider</label>
+                        <select name="provider" class="form-select" required>
+                            <option value="generic" @selected(old('provider', $gateway->provider) === 'generic')>Generic HTTP (other providers)</option>
+                            <option value="oasis" @selected(in_array(old('provider', $gateway->provider), ['oasis', 'bulksms']))>OASIS BulkSMS (bulksms.oasistech.co.tz)</option>
+                        </select>
+                    </div>
                     <div class="col-md-4"><label class="form-label">Label</label><input name="label" class="form-control" value="{{ old('label', $gateway->label) }}" placeholder="e.g. Beem, Twilio"></div>
-                    <div class="col-md-4"><label class="form-label">Sender ID</label><input name="sender_id" class="form-control" value="{{ old('sender_id', $gateway->sender_id) }}" placeholder="AMOLECK"></div>
-                    <div class="col-md-8"><label class="form-label">API Base URL</label><input type="url" name="base_url" class="form-control" value="{{ old('base_url', $gateway->base_url) }}" placeholder="https://api.provider.com"></div>
-                    <div class="col-md-4"><label class="form-label">Endpoint</label><input name="endpoint" class="form-control" value="{{ old('endpoint', $gateway->endpoint) }}" placeholder="/v1/sms/send"></div>
+                    <div class="col-md-4"><label class="form-label">Sender ID</label><input name="sender_id" class="form-control" value="{{ old('sender_id', $gateway->sender_id) }}" placeholder="AMOLECK"><div class="form-text">OASIS: approved senders only — e.g. <code>AMOLECK</code></div></div>
+                    <div class="col-md-8"><label class="form-label">API Base URL</label><input type="url" name="base_url" class="form-control" value="{{ old('base_url', $gateway->base_url) }}" placeholder="https://bulksms.oasistech.co.tz"><div class="form-text">OASIS BulkSMS: <code>https://bulksms.oasistech.co.tz</code></div></div>
+                    <div class="col-md-4"><label class="form-label">Endpoint</label><input name="endpoint" class="form-control" value="{{ old('endpoint', $gateway->endpoint) }}" placeholder="/v1/sms"><div class="form-text">OASIS BulkSMS: <code>/v1/sms</code></div></div>
                     <div class="col-md-6"><label class="form-label">API Key</label><input type="password" name="api_key" class="form-control" value="" placeholder="{{ $gateway->api_key ? '•••••••• (saved)' : 'Not set' }}" autocomplete="new-password"></div>
                     <div class="col-md-6"><label class="form-label">API Secret</label><input type="password" name="api_secret" class="form-control" value="" placeholder="{{ $gateway->api_secret ? '•••••••• (saved)' : 'Not set' }}" autocomplete="new-password"></div>
                     <div class="col-md-4"><label class="form-label">Username</label><input name="username" class="form-control" value="{{ old('username', $gateway->username) }}"></div>
@@ -33,8 +39,14 @@
                     <label class="form-label">Phone Number</label><input name="phone" class="form-control mb-2" placeholder="0712 345 678" required>
                     <label class="form-label">Test Message</label><textarea name="message" class="form-control mb-3" rows="3" required>Test message from {{ \App\Support\Settings::get('clinic_name') }}</textarea>
                     <button class="btn btn-outline-primary w-100">Send Test</button>
-                    <p class="small text-muted mt-2 mb-0">"Accepted" means the gateway received the request — delivery is confirmed separately via webhook reports.</p>
+                    <p class="small text-muted mt-2 mb-0">"Accepted" means the gateway received the request — delivery is confirmed separately via webhook reports. Live tests consume one credit.</p>
                 </form>
+                <div class="card-footer bg-white border-top">
+                    <form method="POST" action="{{ route('admin.communication.gateway.balance') }}">
+                        @csrf
+                        <button class="btn btn-outline-secondary w-100">Check Credit Balance</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
