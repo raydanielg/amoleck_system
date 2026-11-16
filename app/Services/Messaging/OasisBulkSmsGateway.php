@@ -79,6 +79,44 @@ class OasisBulkSmsGateway implements SmsGatewayInterface
         }
     }
 
+    /**
+     * Pull recent message logs from the provider — used to reconcile delivery
+     * status when webhooks are unavailable. Requires scope messages:read.
+     *
+     * @return array<int, array{provider_ref: ?string, status: string, raw: array}>
+     */
+    public function recentLogs(SmsGateway $gateway, int $limit = 50): array
+    {
+        try {
+            $response = Http::timeout($gateway->timeout_seconds ?: 15)
+                ->acceptJson()
+                ->withToken($gateway->api_key)
+                ->get(rtrim($gateway->base_url, '/').'/v1/logs', ['type' => 'sms', 'limit' => $limit]);
+
+            if (! $response->successful()) {
+                return [];
+            }
+
+            $json = $response->json() ?? [];
+            $rows = is_array($json['data'] ?? null) ? $json['data'] : (is_array($json['logs'] ?? null) ? $json['logs'] : (array_is_list($json) ? $json : []));
+
+            $out = [];
+            foreach ($rows as $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $mapped = $this->mapDeliveryReport($row);
+                if ($mapped) {
+                    $out[] = $mapped;
+                }
+            }
+
+            return $out;
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
     public function mapDeliveryReport(array $payload): ?array
     {
         // Webhook envelope: {id, type: "sms.delivered", data: {provider_ref, status, ...}}

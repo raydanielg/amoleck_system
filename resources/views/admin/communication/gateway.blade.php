@@ -32,6 +32,23 @@
             </div>
         </div>
         <div class="col-lg-5">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-label">Credit Balance</div>
+                        <div class="fs-4 fw-bold {{ ($gateway->manual_balance ?? 0) > 0 ? 'text-success' : 'text-danger' }}">
+                            {{ $gateway->manual_balance !== null ? number_format((float) $gateway->manual_balance, 2) : '—' }}
+                        </div>
+                        <div class="small text-muted">
+                            {{ $gateway->balance_checked_at ? 'Checked '.$gateway->balance_checked_at->diffForHumans() : 'Never checked' }}
+                            · auto-refreshes hourly via scheduler
+                        </div>
+                    </div>
+                    <form method="POST" action="{{ route('admin.communication.gateway.balance') }}">@csrf
+                        <button class="btn btn-outline-primary btn-sm">Refresh</button>
+                    </form>
+                </div>
+            </div>
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white fw-semibold">Send Test SMS</div>
                 <form method="POST" action="{{ route('admin.communication.gateway.test') }}" class="card-body">

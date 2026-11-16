@@ -24,7 +24,7 @@
                         <dt class="col-5 text-muted">Status</dt><dd class="col-7"><span class="badge {{ $gateway->enabled ? 'text-bg-success' : 'text-bg-secondary' }}">{{ $gateway->enabled ? 'Enabled' : 'Disabled' }}</span></dd>
                         <dt class="col-5 text-muted">Configured</dt><dd class="col-7">{{ $gateway->isConfigured() ? 'Yes' : 'Not configured' }}</dd>
                         <dt class="col-5 text-muted">Sender ID</dt><dd class="col-7">{{ $gateway->sender_id ?: '—' }}</dd>
-                        <dt class="col-5 text-muted">Balance</dt><dd class="col-7">{{ $gateway->manual_balance !== null ? number_format((float) $gateway->manual_balance, 2).' (manual)' : '—' }}</dd>
+                        <dt class="col-5 text-muted">Balance</dt><dd class="col-7">{{ $gateway->manual_balance !== null ? number_format((float) $gateway->manual_balance, 2).' credits' : '—' }}{{ $gateway->balance_checked_at ? ' · '.$gateway->balance_checked_at->diffForHumans() : '' }}</dd>
                     </dl>
                     <a href="{{ route('admin.communication.gateway') }}" class="btn btn-sm btn-outline-primary w-100 mt-3">Configure Gateway</a>
                 </div>
