@@ -1,13 +1,15 @@
 <?php
 
 /**
- * Shared-hosting front controller.
+ * Shared-hosting front controller shim.
  *
- * Used only when the web server's document root is the project root
- * instead of public/ (e.g. cPanel). All requests are forwarded to the
- * real Laravel front controller in public/ — the root .htaccess handles
- * asset paths, and this file guarantees "/" bootstraps correctly even
- * without mod_rewrite.
+ * Use this ONLY when the web server's document root points at the
+ * repository root (e.g. cPanel/LiteSpeed uploads) and cannot be set
+ * to public/. It forwards every request to Laravel's real front
+ * controller in public/index.php.
+ *
+ * Preferred setup: point the document root at public/ and delete
+ * this file and the root .htaccess.
  */
 
 require __DIR__.'/public/index.php';

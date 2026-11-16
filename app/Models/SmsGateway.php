@@ -18,9 +18,6 @@ class SmsGateway extends Model
     {
         return [
             'enabled' => 'boolean',
-            'api_key' => 'encrypted',
-            'api_secret' => 'encrypted',
-            'password' => 'encrypted',
             'cost_per_segment' => 'decimal:4',
             'balance_checked_at' => 'datetime',
         ];
@@ -35,4 +32,36 @@ class SmsGateway extends Model
     {
         return filled($this->base_url) && filled($this->endpoint);
     }
+
+    /**
+     * Secrets are encrypted at rest. If APP_KEY has rotated since the value
+     * was stored, return null instead of throwing a DecryptException (500).
+     * webhook_secret may hold a legacy plaintext value — return it as-is.
+     */
+    private function secretGet(string $key): ?string
+    {
+        $v = $this->attributes[$key] ?? null;
+        if (! $v) {
+            return null;
+        }
+        try {
+            return \Illuminate\Support\Facades\Crypt::decryptString($v);
+        } catch (\Throwable) {
+            return $key === 'webhook_secret' ? $v : null;
+        }
+    }
+
+    private function secretSet(string $key, ?string $v): void
+    {
+        $this->attributes[$key] = $v ? \Illuminate\Support\Facades\Crypt::encryptString($v) : null;
+    }
+
+    public function getApiKeyAttribute($v): ?string { return $this->secretGet('api_key'); }
+    public function setApiKeyAttribute($v): void { $this->secretSet('api_key', $v); }
+    public function getApiSecretAttribute($v): ?string { return $this->secretGet('api_secret'); }
+    public function setApiSecretAttribute($v): void { $this->secretSet('api_secret', $v); }
+    public function getPasswordAttribute($v): ?string { return $this->secretGet('password'); }
+    public function setPasswordAttribute($v): void { $this->secretSet('password', $v); }
+    public function getWebhookSecretAttribute($v): ?string { return $this->secretGet('webhook_secret'); }
+    public function setWebhookSecretAttribute($v): void { $this->secretSet('webhook_secret', $v); }
 }
