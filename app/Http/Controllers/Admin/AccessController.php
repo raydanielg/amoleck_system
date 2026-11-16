@@ -3,18 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Branch;
-use App\Models\Department;
 use App\Models\Employee;
-use App\Models\JobPosition;
 use App\Models\User;
 use App\Services\AuditLogger;
 use App\Support\Permissions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class AccessController extends Controller
 {
@@ -56,6 +53,7 @@ class AccessController extends Controller
             }
         });
         AuditLogger::log('staff.created', 'user', null);
+
         return back()->with('success', 'Staff account created. They must change the password at first login.');
     }
 
@@ -65,6 +63,7 @@ class AccessController extends Controller
         abort_if($user->id === auth()->id() && $data['role'] !== User::ROLE_ADMIN, 422, 'You cannot remove your own admin role.');
         $user->update(['role' => $data['role']]);
         AuditLogger::log('staff.role_changed', 'user', $user->id, ['role' => null], ['role' => $data['role']]);
+
         return back()->with('success', 'Role updated.');
     }
 
@@ -80,6 +79,19 @@ class AccessController extends Controller
             ['allowed' => $data['allowed']]
         );
         AuditLogger::log('staff.permission', 'user', $user->id, null, [$data['permission'] => (bool) $data['allowed']]);
+
         return back()->with('success', 'Permission updated.');
+    }
+
+    /** Effective permission matrix for a user — shows the source of every allow/deny decision. */
+    public function matrix(User $user)
+    {
+        $rows = [];
+        foreach (Permissions::CATALOG as $key => [$group, $desc]) {
+            $src = $user->permissionSource($key);
+            $rows[$group][] = ['key' => $key, 'description' => $desc, 'allowed' => $src['allowed'], 'via' => $src['via']];
+        }
+
+        return view('admin.access.matrix', ['target' => $user, 'rows' => $rows]);
     }
 }

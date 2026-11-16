@@ -22,19 +22,23 @@
                 </li>
 
                 <li class="nav-header text-uppercase small text-muted mt-1">{{ __('Clinic Operations') }}</li>
+                @if (auth()->user()->hasPermission('patients.view'))
                 <li class="nav-item">
                     <a href="{{ route('patients.index') }}" class="nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">
                         <i class="nav-icon hgi-stroke hgi-patient"></i>
                         <p>{{ __('Patients') }}</p>
                     </a>
                 </li>
+                @endif
+                @if (auth()->user()->hasPermission('clinical.view'))
                 <li class="nav-item">
                     <a href="{{ route('visits.index') }}" class="nav-link {{ request()->routeIs('visits.*') ? 'active' : '' }}">
                         <i class="nav-icon hgi-stroke hgi-stethoscope-02"></i>
                         <p>{{ __('Visits & Treatment') }}</p>
                     </a>
                 </li>
-                @if (\App\Support\Settings::bool('appointments_enabled', true))
+                @endif
+                @if (\App\Support\Settings::bool('appointments_enabled', true) && auth()->user()->hasPermission('appointments.manage'))
                     <li class="nav-item">
                         <a href="{{ route('appointments.index') }}" class="nav-link {{ request()->routeIs('appointments.*') ? 'active' : '' }}">
                             <i class="nav-icon hgi-stroke hgi-calendar-01"></i>
@@ -42,12 +46,14 @@
                         </a>
                     </li>
                 @endif
+                @if (auth()->user()->hasPermission('clinical.view') || auth()->user()->hasPermission('patients.view'))
                 <li class="nav-item">
                     <a href="{{ route('follow-ups.index') }}" class="nav-link {{ request()->routeIs('follow-ups.*') ? 'active' : '' }}">
                         <i class="nav-icon hgi-stroke hgi-rotate-01"></i>
                         <p>{{ __('Follow-ups') }}</p>
                     </a>
                 </li>
+                @endif
                 @if ($isAdmin)
                     <li class="nav-item">
                         <a href="{{ route('admin.services.index') }}" class="nav-link {{ request()->routeIs('admin.services.*', 'admin.service-categories.*') ? 'active' : '' }}">

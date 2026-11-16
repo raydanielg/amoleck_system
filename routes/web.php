@@ -62,8 +62,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Patients
-    Route::resource('patients', PatientController::class)->except(['destroy']);
-    Route::get('patients/{patient}/print', [PatientController::class, 'print'])->name('patients.print');
+    Route::resource('patients', PatientController::class)->except(['destroy'])
+        ->middlewareFor(['index', 'show'], 'perm:patients.view')
+        ->middlewareFor(['create', 'store'], 'perm:patients.register')
+        ->middlewareFor(['edit', 'update'], 'perm:patients.edit');
+    Route::get('patients/{patient}/print', [PatientController::class, 'print'])->name('patients.print')->middleware('perm:patients.view');
 
     // Visits
     Route::get('patients/{patient}/visits/create', [VisitController::class, 'create'])->name('patients.visits.create')->middleware('perm:clinical.view');
@@ -94,14 +97,18 @@ Route::middleware('auth')->group(function () {
     Route::get('expenses/{expense}/receipt', [ExpenseController::class, 'receipt'])->name('expenses.receipt');
 
     // Appointments & follow-ups
-    Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index');
-    Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store');
-    Route::put('appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
-    Route::patch('appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('appointments.status');
+    Route::middleware('perm:appointments.manage')->group(function () {
+        Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+        Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+        Route::put('appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
+        Route::patch('appointments/{appointment}', [AppointmentController::class, 'updateStatus'])->name('appointments.status');
+    });
 
-    Route::get('follow-ups', [FollowUpController::class, 'index'])->name('follow-ups.index');
-    Route::post('follow-ups', [FollowUpController::class, 'store'])->name('follow-ups.store');
-    Route::patch('follow-ups/{followUp}/status', [FollowUpController::class, 'updateStatus'])->name('follow-ups.status');
+    Route::middleware('perm:clinical.view,patients.view')->group(function () {
+        Route::get('follow-ups', [FollowUpController::class, 'index'])->name('follow-ups.index');
+        Route::post('follow-ups', [FollowUpController::class, 'store'])->name('follow-ups.store');
+        Route::patch('follow-ups/{followUp}/status', [FollowUpController::class, 'updateStatus'])->name('follow-ups.status');
+    });
 
     // POS (admin, or staff when staff_can_pos enabled)
     Route::middleware('pos.access')->group(function () {
@@ -113,6 +120,7 @@ Route::middleware('auth')->group(function () {
 
     // Notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('live/summary', [NotificationController::class, 'summary'])->name('live.summary');
 
     // Management / Executive Intelligence (permission-gated)
     Route::middleware('perm:exec.dashboard')->prefix('management')->name('management.')->group(function () {
@@ -205,6 +213,7 @@ Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->grou
     Route::post('access/users', [AccessController::class, 'store'])->name('access.users.store');
     Route::put('access/users/{user}/role', [AccessController::class, 'updateRole'])->name('access.users.role');
     Route::post('access/users/{user}/permission', [AccessController::class, 'setPermission'])->name('access.users.permission');
+    Route::get('access/users/{user}/permissions', [AccessController::class, 'matrix'])->name('access.users.matrix');
 
     // Enterprise Operations (HR, Payroll, Assets, Branches)
     Route::get('operations', [OpsController::class, 'dashboard'])->name('ops.dashboard');

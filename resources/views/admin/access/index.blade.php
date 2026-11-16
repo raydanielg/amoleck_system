@@ -15,7 +15,10 @@
                     </td>
                     <td class="small text-muted">{{ $u->employee?->employee_number ?? '—' }}</td>
                     <td><span class="badge {{ $u->status==='active'?'text-bg-success':'text-bg-secondary' }}">{{ $u->status }}</span></td>
-                    <td class="text-end"><button class="btn btn-sm btn-outline-primary" data-bs-toggle="offcanvas" data-bs-target="#perm{{ $u->id }}">Manage</button></td>
+                    <td class="text-end">
+                        <a href="{{ route('admin.access.users.matrix', $u) }}" class="btn btn-sm btn-outline-secondary">Matrix</a>
+                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="offcanvas" data-bs-target="#perm{{ $u->id }}">Manage</button>
+                    </td>
                 </tr>
             @endforeach</tbody>
         </table></div>

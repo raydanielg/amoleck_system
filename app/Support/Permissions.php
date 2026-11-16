@@ -70,12 +70,68 @@ class Permissions
         ],
     ];
 
+    /**
+     * Implied permissions: granting the key also satisfies the listed keys.
+     * Fixes "granted X but Y still denied" — e.g. accounting.reports implies
+     * accounting.dashboard because the /accounting group requires it.
+     */
+    public const IMPLIED = [
+        'patients.register' => ['patients.view'],
+        'patients.edit' => ['patients.view'],
+        'reception.queue' => ['patients.view'],
+        'clinical.assess' => ['clinical.view'],
+        'billing.create' => ['billing.view'],
+        'payments.record' => ['billing.view'],
+        'receipts.print' => ['billing.view'],
+        'accounting.journals' => ['accounting.dashboard'],
+        'accounting.post' => ['accounting.dashboard', 'accounting.journals'],
+        'accounting.verify_payments' => ['accounting.dashboard'],
+        'accounting.expenses' => ['accounting.dashboard'],
+        'accounting.receivables' => ['accounting.dashboard'],
+        'accounting.banking' => ['accounting.dashboard'],
+        'accounting.reports' => ['accounting.dashboard'],
+        'accounting.periods' => ['accounting.dashboard'],
+        'exec.financial' => ['exec.dashboard'],
+        'exec.hr' => ['exec.dashboard'],
+        'exec.branches' => ['exec.dashboard'],
+        'exec.insights' => ['exec.dashboard'],
+        'exec.reports' => ['exec.dashboard'],
+        'docs.upload' => ['docs.view'],
+        'docs.folders' => ['docs.view'],
+        'docs.edit' => ['docs.view'],
+        'docs.download' => ['docs.view'],
+        'docs.share' => ['docs.view'],
+        'docs.external' => ['docs.view', 'docs.share'],
+        'docs.delete' => ['docs.view'],
+        'docs.restore' => ['docs.view'],
+        'docs.versions' => ['docs.view'],
+        'docs.perms' => ['docs.view'],
+        'board.ack' => ['board.view'],
+        'board.publish' => ['board.view'],
+        'board.manage' => ['board.view'],
+        'board.reports' => ['board.view'],
+    ];
+
+    /** Keys that grant the given key through IMPLIED. */
+    public static function impliedBy(string $key): array
+    {
+        $parents = [];
+        foreach (self::IMPLIED as $granted => $impliedKeys) {
+            if (in_array($key, $impliedKeys, true)) {
+                $parents[] = $granted;
+            }
+        }
+
+        return $parents;
+    }
+
     public static function groups(): array
     {
         $groups = [];
         foreach (self::CATALOG as $key => [$group, $desc]) {
             $groups[$group][] = ['key' => $key, 'description' => $desc];
         }
+
         return $groups;
     }
 }

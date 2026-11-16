@@ -13,6 +13,8 @@
             {{ \App\Support\Settings::get('clinic_name', config('app.name')) }}
         </span>
 
+        <span id="live-clock" class="navbar-text d-none d-lg-inline small text-muted ms-3" title="Africa/Dar_es_Salaam (EAT)"></span>
+
         <ul class="navbar-nav ms-auto">
             @php
                 $unreadCount = $authUser->notifications()->whereNull('read_at')->count();

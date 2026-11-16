@@ -3,7 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Support\Permissions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -12,10 +15,13 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public const ROLE_ADMIN = 'ADMIN';
+
     public const ROLE_CLINIC_STAFF = 'CLINIC_STAFF';
+
     public const ROLE_RECEPTIONIST = 'RECEPTIONIST';
 
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_INACTIVE = 'inactive';
 
     protected $fillable = [
@@ -96,28 +102,86 @@ class User extends Authenticatable
         return $this->notifications()->whereNull('read_at')->count();
     }
 
-    public function permissionOverrides(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function permissionOverrides(): HasMany
     {
-        return $this->hasMany(\App\Models\UserPermission::class);
+        return $this->hasMany(UserPermission::class);
     }
 
-    public function employee(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function employee(): HasOne
     {
-        return $this->hasOne(\App\Models\Employee::class);
+        return $this->hasOne(Employee::class);
     }
 
-    /** Effective permission check: ADMIN all, then user overrides, then role defaults. */
+    /** Effective permission check: ADMIN all, then user overrides, then role defaults, then implied grants. */
     public function hasPermission(string $key): bool
     {
-        if ($this->isAdmin()) return true;
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        // An explicit override for this key is final (grant or deny).
         $override = $this->permissionOverrides->firstWhere('permission', $key);
-        if ($override) return $override->allowed;
-        return in_array($key, \App\Support\Permissions::ROLE_DEFAULTS[$this->role] ?? [], true);
+        if ($override) {
+            return (bool) $override->allowed;
+        }
+
+        if (in_array($key, Permissions::ROLE_DEFAULTS[$this->role] ?? [], true)) {
+            return true;
+        }
+
+        // Another granted key may imply this one (e.g. accounting.reports ⇒ accounting.dashboard).
+        foreach (Permissions::impliedBy($key) as $grantedKey) {
+            if ($this->hasDirectPermission($grantedKey)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** Direct grant only — override or role default, no implied resolution. */
+    private function hasDirectPermission(string $key): bool
+    {
+        $override = $this->permissionOverrides->firstWhere('permission', $key);
+
+        return $override
+            ? (bool) $override->allowed
+            : in_array($key, Permissions::ROLE_DEFAULTS[$this->role] ?? [], true);
+    }
+
+    /** Explains the access decision for a permission — used by the admin debugger. */
+    public function permissionSource(string $key): array
+    {
+        if ($this->isAdmin()) {
+            return ['allowed' => true, 'via' => 'admin role'];
+        }
+
+        $override = $this->permissionOverrides->firstWhere('permission', $key);
+        if ($override) {
+            return ['allowed' => (bool) $override->allowed, 'via' => $override->allowed ? 'user override (granted)' : 'user override (denied)'];
+        }
+
+        if (in_array($key, Permissions::ROLE_DEFAULTS[$this->role] ?? [], true)) {
+            return ['allowed' => true, 'via' => 'role default'];
+        }
+
+        foreach (Permissions::impliedBy($key) as $grantedKey) {
+            if ($this->hasDirectPermission($grantedKey)) {
+                return ['allowed' => true, 'via' => 'implied by '.$grantedKey];
+            }
+        }
+
+        return ['allowed' => false, 'via' => 'not granted'];
     }
 
     public function hasAnyPermission(array $keys): bool
     {
-        foreach ($keys as $k) if ($this->hasPermission($k)) return true;
+        foreach ($keys as $k) {
+            if ($this->hasPermission($k)) {
+                return true;
+            }
+        }
+
         return false;
     }
 }

@@ -282,3 +282,101 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// ─── Live notifications (polling — no page refresh needed) ───────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const badge = document.querySelector('.notif-badge');
+    const bell = document.querySelector('.hgi-notification-01')?.closest('a, .nav-item');
+    if (! badge && ! bell) return;
+
+    const POLL_MS = 20000;
+    let knownIds = new Set();
+    let firstRun = true;
+
+    const toast = (title, message) => {
+        let holder = document.getElementById('liveToastHolder');
+        if (! holder) {
+            holder = document.createElement('div');
+            holder.id = 'liveToastHolder';
+            holder.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            document.body.appendChild(holder);
+        }
+        const el = document.createElement('div');
+        el.className = 'toast align-items-center border-0 shadow';
+        el.setAttribute('role', 'alert');
+        const flex = document.createElement('div');
+        flex.className = 'd-flex';
+        const bodyEl = document.createElement('div');
+        bodyEl.className = 'toast-body';
+        const titleEl = document.createElement('div');
+        titleEl.className = 'fw-semibold small';
+        titleEl.textContent = title;
+        const msgEl = document.createElement('div');
+        msgEl.className = 'small text-muted';
+        msgEl.textContent = message || '';
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'btn-close me-2 m-auto';
+        closeBtn.setAttribute('data-bs-dismiss', 'toast');
+        bodyEl.appendChild(titleEl);
+        bodyEl.appendChild(msgEl);
+        flex.appendChild(bodyEl);
+        flex.appendChild(closeBtn);
+        el.appendChild(flex);
+        holder.appendChild(el);
+        if (window.bootstrap?.Toast) new window.bootstrap.Toast(el, { delay: 6000 }).show();
+    };
+
+    const updateBadge = (count) => {
+        let b = document.querySelector('.notif-badge');
+        if (count > 0) {
+            if (! b) {
+                const icon = document.querySelector('.hgi-notification-01');
+                if (! icon || ! icon.parentElement) return;
+                b = document.createElement('span');
+                b.className = 'position-absolute translate-middle badge rounded-pill bg-danger notif-badge';
+                icon.parentElement.appendChild(b);
+            }
+            b.textContent = count > 99 ? '99+' : count;
+        } else if (b) {
+            b.remove();
+        }
+    };
+
+    const poll = async () => {
+        try {
+            const res = await fetch('/live/summary', { headers: { 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' });
+            if (! res.ok) return;
+            const data = await res.json();
+            updateBadge(data.unread || 0);
+            const ids = new Set((data.items || []).map(i => i.id));
+            if (! firstRun) {
+                (data.items || []).forEach(i => {
+                    if (! knownIds.has(i.id)) toast(i.title, i.message);
+                });
+            }
+            knownIds = ids;
+            firstRun = false;
+        } catch (e) { /* network hiccup — retry next tick */ }
+    };
+
+    setInterval(poll, POLL_MS);
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') poll();
+    });
+    setTimeout(poll, 3000);
+});
+
+// ─── Live clock — Africa/Dar_es_Salaam, ticks every second ───────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('live-clock');
+    if (! el) return;
+    const fmt = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Africa/Dar_es_Salaam',
+        weekday: 'short', day: '2-digit', month: 'short',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+    });
+    const tick = () => { el.textContent = fmt.format(new Date()) + ' EAT'; };
+    tick();
+    setInterval(tick, 1000);
+});
