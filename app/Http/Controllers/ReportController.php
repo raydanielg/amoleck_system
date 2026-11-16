@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Models\ExpenseApproval;
+use App\Models\Invoice;
+use App\Models\Lead;
 use App\Models\Patient;
+use App\Models\Payment;
+use App\Models\Refund;
+use App\Models\User;
 use App\Models\Visit;
 use App\Models\VisitService;
 use App\Services\AuditLogger;
 use App\Support\Settings;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\View\View;
@@ -29,6 +36,8 @@ class ReportController extends Controller
         'revenue-vs-expenses' => 'Revenue vs Expenses',
         'expense-approvals' => 'Expense Approval History',
         'staff-activity' => 'Staff Activity Summary',
+        'leads' => 'Sponsored Ads Leads',
+        'leads-performance' => 'Leads: Sales Manager Performance',
     ];
 
     /** Reports restricted to administrators (financial + sensitive). */
@@ -37,19 +46,34 @@ class ReportController extends Controller
         'revenue-vs-expenses', 'expense-approvals', 'staff-activity',
     ];
 
+    /** Report types requiring the leads.reports permission (or admin). */
+    private const LEAD_TYPES = ['leads', 'leads-performance'];
+
     public const GROUPS = [
         'Patient Reports' => ['patient-register', 'registrations', 'visits'],
         'Service Reports' => ['service-usage'],
         'Financial Reports' => ['revenue', 'outstanding-invoices', 'refunds', 'discounts', 'revenue-vs-expenses', 'expenses', 'expense-summary', 'expense-approvals'],
         'Staff Reports' => ['staff-activity'],
+        'Marketing Reports' => ['leads', 'leads-performance'],
     ];
+
+    private function authorizeType(Request $request, string $type): void
+    {
+        abort_unless(isset(self::TYPES[$type]), 404);
+        abort_if(in_array($type, self::ADMIN_TYPES) && ! $request->user()->isAdmin(), 403);
+        abort_if(in_array($type, self::LEAD_TYPES) && ! $request->user()->isAdmin() && ! $request->user()->hasPermission('leads.reports'), 403);
+    }
 
     public function index(): View
     {
         $groups = self::GROUPS;
-        if (! request()->user()->isAdmin()) {
+        $user = request()->user();
+        if (! $user->isAdmin()) {
             $groups['Financial Reports'] = ['expenses', 'expense-summary'];
             unset($groups['Staff Reports']);
+        }
+        if (! $user->isAdmin() && ! $user->hasPermission('leads.reports')) {
+            unset($groups['Marketing Reports']);
         }
 
         return view('reports.index', ['types' => self::TYPES, 'groups' => $groups]);
@@ -57,8 +81,7 @@ class ReportController extends Controller
 
     public function show(Request $request, string $type): View
     {
-        abort_unless(isset(self::TYPES[$type]), 404);
-        abort_if(in_array($type, self::ADMIN_TYPES) && ! $request->user()->isAdmin(), 403);
+        $this->authorizeType($request, $type);
 
         [$from, $to] = $this->dateRange($request);
         $data = $this->build($type, $from, $to, $request);
@@ -76,7 +99,7 @@ class ReportController extends Controller
     {
         abort_unless(isset(self::TYPES[$type]), 404);
         abort_unless(in_array($format, ['csv', 'pdf']), 404);
-        abort_if(in_array($type, self::ADMIN_TYPES) && ! $request->user()->isAdmin(), 403);
+        $this->authorizeType($request, $type);
 
         [$from, $to] = $this->dateRange($request);
         $data = $this->build($type, $from, $to, $request);
@@ -91,7 +114,7 @@ class ReportController extends Controller
             return $this->exportCsv($filename, $data['columns'], $data['rows']);
         }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', [
+        $pdf = Pdf::loadView('reports.pdf', [
             'title' => self::TYPES[$type],
             'from' => $from,
             'to' => $to,
@@ -160,14 +183,61 @@ class ReportController extends Controller
             'revenue-vs-expenses' => $this->revenueVsExpenses($from, $to),
             'expense-approvals' => $this->approvalsReport($from, $to),
             'staff-activity' => $this->staffActivityReport($from, $to),
+            'leads' => $this->leadsReport($from, $to),
+            'leads-performance' => $this->leadsPerformanceReport($from, $to),
         };
+    }
+
+    private function leadsReport(string $from, string $to): array
+    {
+        $rows = Lead::with(['source', 'assignee', 'patient'])
+            ->whereBetween('received_at', [$from, $to])->orderBy('received_at')->get();
+
+        return [
+            'columns' => ['Ref', 'Name', 'Phone', 'Source', 'Received', 'Contact', 'Interest', 'Visit Status', 'Manager', 'Patient'],
+            'rows' => $rows->map(fn ($l) => [
+                $l->lead_reference, $l->full_name, $l->phone, $l->source?->name,
+                $l->received_at->format('Y-m-d'), str_replace('_', ' ', $l->contact_status),
+                $l->interest_level ? str_replace('_', ' ', $l->interest_level) : '—',
+                Lead::VISIT_LABELS[$l->visit_status] ?? $l->visit_status,
+                $l->assignee?->name ?? 'Unassigned', $l->patient?->patient_number ?? '—',
+            ])->all(),
+            'totals' => [
+                ['label' => 'Total leads', 'value' => $rows->count()],
+                ['label' => 'Converted', 'value' => $rows->whereNotNull('converted_patient_id')->count()],
+                ['label' => 'Conversion rate', 'value' => $rows->count() ? round($rows->whereNotNull('converted_patient_id')->count() / $rows->count() * 100, 1).'%' : '0%'],
+            ],
+        ];
+    }
+
+    private function leadsPerformanceReport(string $from, string $to): array
+    {
+        $leads = Lead::with('assignee')->whereBetween('received_at', [$from, $to])
+            ->whereNotNull('assigned_to')->get()->groupBy('assigned_to');
+
+        return [
+            'columns' => ['Sales Manager', 'Assigned', 'Contacted', 'Interested', 'Visited', 'Converted', 'Overdue Follow-ups', 'Conversion %'],
+            'rows' => $leads->map(function ($group, $managerId) {
+                $converted = $group->whereNotNull('converted_patient_id')->count();
+
+                return [
+                    $group->first()->assignee?->name ?? 'Unknown', $group->count(),
+                    $group->where('contact_status', Lead::CONTACT_CONTACTED)->count(),
+                    $group->where('interest_level', Lead::INTEREST_INTERESTED)->count(),
+                    $group->whereIn('visit_status', [Lead::VISIT_VISITED, Lead::VISIT_SERVICE_RECEIVED])->count(),
+                    $converted,
+                    $group->filter(fn ($l) => $l->followUpOverdue())->count(),
+                    $group->count() ? round($converted / $group->count() * 100, 1).'%' : '0%',
+                ];
+            })->values()->all(),
+        ];
     }
 
     private function revenueReport(string $from, string $to, Request $request): array
     {
         $currency = Settings::get('currency', 'TZS');
-        $query = \App\Models\Payment::with('invoice', 'patient', 'receiver')
-            ->where('status', \App\Models\Payment::STATUS_COMPLETED)
+        $query = Payment::with('invoice', 'patient', 'receiver')
+            ->where('status', Payment::STATUS_COMPLETED)
             ->whereBetween('payment_date', [$from, $to])
             ->orderBy('payment_date');
 
@@ -191,8 +261,8 @@ class ReportController extends Controller
     private function outstandingReport(): array
     {
         $currency = Settings::get('currency', 'TZS');
-        $invoices = \App\Models\Invoice::with('patient')
-            ->whereIn('status', [\App\Models\Invoice::STATUS_ISSUED, \App\Models\Invoice::STATUS_PARTIALLY_PAID])
+        $invoices = Invoice::with('patient')
+            ->whereIn('status', [Invoice::STATUS_ISSUED, Invoice::STATUS_PARTIALLY_PAID])
             ->orderBy('issue_date')->get();
 
         return [
@@ -209,8 +279,8 @@ class ReportController extends Controller
     private function refundsReport(string $from, string $to): array
     {
         $currency = Settings::get('currency', 'TZS');
-        $refunds = \App\Models\Refund::with('payment.patient', 'refunder')
-            ->where('status', \App\Models\Refund::STATUS_REFUNDED)
+        $refunds = Refund::with('payment.patient', 'refunder')
+            ->where('status', Refund::STATUS_REFUNDED)
             ->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])
             ->latest()->get();
 
@@ -228,8 +298,8 @@ class ReportController extends Controller
     private function discountsReport(string $from, string $to): array
     {
         $currency = Settings::get('currency', 'TZS');
-        $invoices = \App\Models\Invoice::with('patient')
-            ->where('status', '!=', \App\Models\Invoice::STATUS_VOIDED)
+        $invoices = Invoice::with('patient')
+            ->where('status', '!=', Invoice::STATUS_VOIDED)
             ->where('discount_amount', '>', 0)
             ->whereBetween('issue_date', [$from, $to])
             ->orderBy('issue_date')->get();
@@ -248,9 +318,9 @@ class ReportController extends Controller
     private function revenueVsExpenses(string $from, string $to): array
     {
         $currency = Settings::get('currency', 'TZS');
-        $collected = (float) \App\Models\Payment::where('status', \App\Models\Payment::STATUS_COMPLETED)->whereBetween('payment_date', [$from, $to])->sum('amount');
-        $refunded = (float) \App\Models\Refund::where('status', \App\Models\Refund::STATUS_REFUNDED)->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])->sum('amount');
-        $billed = (float) \App\Models\Invoice::where('status', '!=', \App\Models\Invoice::STATUS_VOIDED)->whereBetween('issue_date', [$from, $to])->sum('total');
+        $collected = (float) Payment::where('status', Payment::STATUS_COMPLETED)->whereBetween('payment_date', [$from, $to])->sum('amount');
+        $refunded = (float) Refund::where('status', Refund::STATUS_REFUNDED)->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])->sum('amount');
+        $billed = (float) Invoice::where('status', '!=', Invoice::STATUS_VOIDED)->whereBetween('issue_date', [$from, $to])->sum('total');
         $expenses = (float) Expense::whereIn('status', Expense::countableStatuses())->whereBetween('expense_date', [$from, $to])->sum('amount');
         $net = $collected - $refunded;
 
@@ -270,7 +340,7 @@ class ReportController extends Controller
 
     private function approvalsReport(string $from, string $to): array
     {
-        $approvals = \App\Models\ExpenseApproval::with('expense', 'reviewer')
+        $approvals = ExpenseApproval::with('expense', 'reviewer')
             ->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])
             ->latest()->get();
 
@@ -287,12 +357,12 @@ class ReportController extends Controller
 
     private function staffActivityReport(string $from, string $to): array
     {
-        $rows = \App\Models\User::where('status', \App\Models\User::STATUS_ACTIVE)
+        $rows = User::where('status', User::STATUS_ACTIVE)
             ->get()
             ->map(function ($user) use ($from, $to) {
                 return [
                     $user->name,
-                    $user->role === \App\Models\User::ROLE_ADMIN ? 'Admin' : 'Staff',
+                    $user->role === User::ROLE_ADMIN ? 'Admin' : 'Staff',
                     Patient::where('created_by', $user->id)->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])->count(),
                     Visit::where('recorded_by', $user->id)->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])->count(),
                     Expense::where('recorded_by', $user->id)->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])->count(),

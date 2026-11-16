@@ -135,4 +135,19 @@ class LeadsTest extends TestCase
         // CLINIC_STAFF has no leads.* by default → blocked
         $this->actingAs($user)->get('/leads')->assertForbidden();
     }
+
+    public function test_leads_report_export_respects_permission(): void
+    {
+        $admin = $this->admin();
+        Lead::create([...$this->leadPayload(), 'lead_reference' => 'LD-00001']);
+
+        // Admin can view + export
+        $this->actingAs($admin)->get('/reports/leads')->assertOk();
+        $this->actingAs($admin)->get('/reports/leads/export/csv')->assertOk();
+
+        // Staff without leads.reports is denied both
+        $user = User::factory()->create(['role' => User::ROLE_CLINIC_STAFF, 'status' => 'active']);
+        $this->actingAs($user)->get('/reports/leads')->assertForbidden();
+        $this->actingAs($user)->get('/reports/leads/export/csv')->assertForbidden();
+    }
 }

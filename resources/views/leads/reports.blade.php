@@ -1,6 +1,10 @@
 <x-app-layout>
     <x-slot name="header">{{ __('Leads Reports') }}</x-slot>
-    <x-slot name="headerActions"><a href="{{ route('leads.dashboard') }}" class="btn btn-sm btn-outline-secondary">Dashboard</a></x-slot>
+    <x-slot name="headerActions">
+        <a href="{{ route('reports.export', ['type' => 'leads', 'format' => 'csv', 'from' => $from, 'to' => $to]) }}" class="btn btn-sm btn-outline-secondary">Export CSV</a>
+        <a href="{{ route('reports.export', ['type' => 'leads', 'format' => 'pdf', 'from' => $from, 'to' => $to]) }}" class="btn btn-sm btn-outline-secondary">Export PDF</a>
+        <a href="{{ route('leads.dashboard') }}" class="btn btn-sm btn-outline-secondary">Dashboard</a>
+    </x-slot>
 
     <form method="GET" class="card shadow-sm border-0 mb-3">
         <div class="card-body py-2 d-flex flex-wrap gap-2 align-items-center">
