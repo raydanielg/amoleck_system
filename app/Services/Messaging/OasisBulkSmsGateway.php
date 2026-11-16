@@ -81,14 +81,22 @@ class OasisBulkSmsGateway implements SmsGatewayInterface
 
     public function mapDeliveryReport(array $payload): ?array
     {
-        $ref = $payload['provider_ref']
-            ?? $payload['msg_id']
-            ?? $payload['sms_response']['msg_id']
-            ?? $payload['sms_log_id']
-            ?? null;
-        $status = strtolower((string) ($payload['status'] ?? $payload['event'] ?? ''));
+        // Webhook envelope: {id, type: "sms.delivered", data: {provider_ref, status, ...}}
+        $data = is_array($payload['data'] ?? null) ? $payload['data'] : $payload;
 
-        $map = [
+        $ref = $data['provider_ref']
+            ?? $data['msg_id']
+            ?? $data['sms_response']['msg_id']
+            ?? $data['sms_log_id']
+            ?? null;
+
+        $byEvent = [
+            'sms.delivered' => 'sent',
+            'sms.pending' => 'submitted',
+            'sms.failed' => 'failed',
+            'sms.expired' => 'failed',
+        ];
+        $byStatus = [
             'delivered' => 'delivered',
             'sent' => 'sent',
             'submitted' => 'submitted',
@@ -99,10 +107,13 @@ class OasisBulkSmsGateway implements SmsGatewayInterface
             'undelivered' => 'failed',
         ];
 
-        if (! $ref || ! isset($map[$status])) {
+        $type = strtolower((string) ($payload['type'] ?? ''));
+        $status = $byEvent[$type] ?? $byStatus[strtolower((string) ($data['status'] ?? ''))] ?? null;
+
+        if (! $ref || ! $status) {
             return null;
         }
 
-        return ['provider_ref' => (string) $ref, 'status' => $map[$status], 'raw' => $payload];
+        return ['provider_ref' => (string) $ref, 'status' => $status, 'raw' => $payload];
     }
 }

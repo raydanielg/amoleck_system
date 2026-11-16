@@ -2,13 +2,17 @@
 
 namespace Tests\Feature;
 
+use App\Models\CommunicationConsent;
 use App\Models\SmsGateway;
 use App\Services\Messaging\OasisBulkSmsGateway;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class OasisBulkSmsGatewayTest extends TestCase
 {
+    use RefreshDatabase;
+
     private function gateway(): SmsGateway
     {
         return new SmsGateway([
@@ -105,5 +109,70 @@ class OasisBulkSmsGatewayTest extends TestCase
 
         $this->assertNull($adapter->mapDeliveryReport(['status' => 'delivered']));
         $this->assertNull($adapter->mapDeliveryReport(['provider_ref' => 'x', 'status' => 'unknown']));
+    }
+
+    public function test_delivery_report_maps_webhook_envelope(): void
+    {
+        $adapter = new OasisBulkSmsGateway;
+
+        $mapped = $adapter->mapDeliveryReport([
+            'id' => 'evt_123',
+            'type' => 'sms.failed',
+            'data' => ['provider_ref' => '1880000001', 'recipient' => '+255712345678', 'error' => 'refused'],
+        ]);
+
+        $this->assertSame('failed', $mapped['status']);
+        $this->assertSame('1880000001', $mapped['provider_ref']);
+    }
+
+    public function test_webhook_endpoint_accepts_valid_hmac_signature(): void
+    {
+        SmsGateway::create([
+            'provider' => 'oasis',
+            'base_url' => 'https://bulksms.oasistech.co.tz',
+            'endpoint' => '/v1/sms',
+            'api_key' => 'k',
+            'webhook_secret' => 'whsec',
+        ]);
+
+        $body = json_encode([
+            'id' => 'evt_1',
+            'type' => 'sms.delivered',
+            'data' => ['provider_ref' => '1880000001', 'status' => 'sent'],
+        ]);
+        $signature = hash_hmac('sha256', $body, 'whsec');
+
+        $this->call('POST', '/webhooks/sms/oasis', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_X_BULKSMS_SIGNATURE' => $signature,
+        ], $body)->assertOk()->assertJson(['ok' => true]);
+
+        $this->call('POST', '/webhooks/sms/oasis', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_X_BULKSMS_SIGNATURE' => 'bad-signature',
+        ], $body)->assertForbidden();
+    }
+
+    public function test_webhook_marks_opted_out_recipient(): void
+    {
+        SmsGateway::create([
+            'provider' => 'oasis',
+            'base_url' => 'https://bulksms.oasistech.co.tz',
+            'endpoint' => '/v1/sms',
+            'api_key' => 'k',
+            'webhook_secret' => 'whsec',
+        ]);
+
+        $body = json_encode([
+            'type' => 'recipient.opted_out',
+            'data' => ['recipient' => '+255712345678'],
+        ]);
+
+        $this->call('POST', '/webhooks/sms/oasis', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_X_BULKSMS_SIGNATURE' => hash_hmac('sha256', $body, 'whsec'),
+        ], $body)->assertOk();
+
+        $this->assertTrue(CommunicationConsent::optedOut('+255712345678'));
     }
 }
