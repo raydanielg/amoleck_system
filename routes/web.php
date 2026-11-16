@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AssessmentController;
@@ -208,6 +209,7 @@ Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->grou
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit.index');
+    Route::get('system/health', [SystemController::class, 'health'])->name('system.health');
 
     Route::get('access', [AccessController::class, 'index'])->name('access.index');
     Route::post('access/users', [AccessController::class, 'store'])->name('access.users.store');

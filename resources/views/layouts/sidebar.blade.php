@@ -294,6 +294,12 @@
                             <p>{{ __('Audit Logs') }}</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.system.health') }}" class="nav-link {{ request()->routeIs('admin.system.*') ? 'active' : '' }}">
+                            <i class="nav-icon hgi-stroke hgi-activity-01"></i>
+                            <p>{{ __('System Health') }}</p>
+                        </a>
+                    </li>
                 @endif
 
                 @if ($isAdmin)

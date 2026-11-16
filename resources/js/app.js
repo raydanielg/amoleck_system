@@ -380,3 +380,24 @@ document.addEventListener('DOMContentLoaded', () => {
     tick();
     setInterval(tick, 1000);
 });
+
+// ─── Prevent duplicate form submissions ──────────────────────────────────────
+document.addEventListener('submit', (e) => {
+    if (e.defaultPrevented) return;
+    const form = e.target;
+    if (! (form instanceof HTMLFormElement) || form.dataset.allowResubmit) return;
+    setTimeout(() => {
+        form.querySelectorAll('button[type="submit"], button:not([type])').forEach((btn) => {
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
+        });
+    }, 0);
+});
+
+// Restore buttons when the page is served from bfcache (Back/Forward navigation)
+window.addEventListener('pageshow', () => {
+    document.querySelectorAll('form button[disabled]').forEach((btn) => {
+        btn.disabled = false;
+        btn.classList.remove('opacity-75');
+    });
+});

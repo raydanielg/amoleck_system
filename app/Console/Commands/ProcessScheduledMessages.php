@@ -7,6 +7,7 @@ use App\Models\SmsGateway;
 use App\Services\Messaging\GatewayManager;
 use App\Services\Messaging\MessagingService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 
 class ProcessScheduledMessages extends Command
 {
@@ -16,6 +17,8 @@ class ProcessScheduledMessages extends Command
 
     public function handle(): int
     {
+        Cache::forever('scheduler.last_run', now());
+
         $gateway = SmsGateway::current();
         if (! $gateway->enabled || ! $gateway->isConfigured()) {
             $this->warn('SMS gateway is not configured or disabled.');

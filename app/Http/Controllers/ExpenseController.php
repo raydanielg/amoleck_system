@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Models\ExpenseApproval;
 use App\Models\ExpenseCategory;
 use App\Services\AuditLogger;
+use App\Services\NotificationService;
 use App\Support\Settings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,6 +20,11 @@ class ExpenseController extends Controller
     public function index(Request $request): View
     {
         $query = Expense::with('category', 'recorder')->latest('expense_date');
+
+        // Staff see only their own expense claims; admins see everything
+        if (! $request->user()->isAdmin()) {
+            $query->where('recorded_by', $request->user()->id);
+        }
 
         if ($search = trim((string) $request->query('q'))) {
             $query->where(function ($q) use ($search) {
@@ -106,7 +113,7 @@ class ExpenseController extends Controller
         AuditLogger::log('expense.created', 'expense', $expense->id, null, $expense->only(['expense_reference', 'title', 'amount', 'status']));
 
         if ($expense->status === Expense::STATUS_SUBMITTED) {
-            \App\Services\NotificationService::notifyAdmins(
+            NotificationService::notifyAdmins(
                 'expense.submitted', 'Expense awaiting approval',
                 "{$request->user()->name} submitted {$expense->expense_reference} ({$expense->amount})",
                 route('admin.expense-approvals.show', $expense),
@@ -119,6 +126,7 @@ class ExpenseController extends Controller
 
     public function show(Expense $expense): View
     {
+        abort_unless(request()->user()->isAdmin() || $expense->recorded_by === request()->user()->id, 403);
         $expense->load(['category', 'recorder', 'reviewer']);
 
         return view('expenses.show', [
@@ -176,14 +184,14 @@ class ExpenseController extends Controller
                     'reviewed_by' => null,
                     'reviewed_at' => null,
                 ]);
-                \App\Models\ExpenseApproval::create([
+                ExpenseApproval::create([
                     'expense_id' => $expense->id,
                     'reviewer_id' => $request->user()->id,
-                    'decision' => \App\Models\ExpenseApproval::DECISION_RESUBMITTED,
+                    'decision' => ExpenseApproval::DECISION_RESUBMITTED,
                     'previous_status' => Expense::STATUS_RETURNED,
                     'new_status' => Expense::STATUS_SUBMITTED,
                 ]);
-                \App\Services\NotificationService::notifyAdmins(
+                NotificationService::notifyAdmins(
                     'expense.submitted', 'Expense resubmitted',
                     "{$request->user()->name} resubmitted {$expense->expense_reference}",
                     route('admin.expense-approvals.show', $expense),
@@ -213,6 +221,7 @@ class ExpenseController extends Controller
 
     public function receipt(Expense $expense): StreamedResponse
     {
+        abort_unless(request()->user()->isAdmin() || $expense->recorded_by === request()->user()->id, 403);
         abort_unless($expense->receipt_path && Storage::exists($expense->receipt_path), 404);
 
         return Storage::download($expense->receipt_path, basename($expense->receipt_path));

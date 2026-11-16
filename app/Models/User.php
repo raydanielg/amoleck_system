@@ -69,7 +69,7 @@ class User extends Authenticatable
 
     public function isActive(): bool
     {
-        return $this->status === self::STATUS_ACTIVE;
+        return strcasecmp((string) $this->status, self::STATUS_ACTIVE) === 0;
     }
 
     public function patients()
