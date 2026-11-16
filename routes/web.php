@@ -42,6 +42,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FollowUpController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MyWorkplaceController;
 use App\Http\Controllers\NotificationController;
@@ -122,6 +123,25 @@ Route::middleware('auth')->group(function () {
     // Notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('live/summary', [NotificationController::class, 'summary'])->name('live.summary');
+
+    // Sponsored Ads Leads
+    Route::middleware('perm:leads.view')->prefix('leads')->name('leads.')->group(function () {
+        Route::get('/', [LeadController::class, 'index'])->name('index');
+        Route::get('dashboard', [LeadController::class, 'dashboard'])->name('dashboard');
+        Route::get('reports', [LeadController::class, 'reports'])->name('reports');
+        Route::get('create', [LeadController::class, 'create'])->name('create');
+        Route::post('/', [LeadController::class, 'store'])->name('store');
+        Route::post('sources', [LeadController::class, 'storeSource'])->name('sources.store');
+        Route::post('sources/{leadSource}/toggle', [LeadController::class, 'toggleSource'])->name('sources.toggle');
+        Route::get('{lead}', [LeadController::class, 'show'])->name('show');
+        Route::get('{lead}/edit', [LeadController::class, 'edit'])->name('edit');
+        Route::put('{lead}', [LeadController::class, 'update'])->name('update');
+        Route::post('{lead}/assign', [LeadController::class, 'assign'])->name('assign');
+        Route::patch('{lead}/status', [LeadController::class, 'updateStatus'])->name('status');
+        Route::post('{lead}/follow-ups', [LeadController::class, 'storeFollowUp'])->name('follow-ups.store');
+        Route::post('{lead}/convert', [LeadController::class, 'convert'])->name('convert');
+        Route::delete('{lead}', [LeadController::class, 'destroy'])->name('destroy');
+    });
 
     // Management / Executive Intelligence (permission-gated)
     Route::middleware('perm:exec.dashboard')->prefix('management')->name('management.')->group(function () {

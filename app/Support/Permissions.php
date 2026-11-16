@@ -53,6 +53,14 @@ class Permissions
         'board.publish' => ['Document Board', 'Publish announcements and documents'],
         'board.manage' => ['Document Board', 'Edit, schedule, pin and archive publications'],
         'board.reports' => ['Document Board', 'View acknowledgment and delivery reports'],
+        'leads.view' => ['Sponsored Ads Leads', 'View assigned leads'],
+        'leads.create' => ['Sponsored Ads Leads', 'Register new leads'],
+        'leads.update' => ['Sponsored Ads Leads', 'Edit lead details'],
+        'leads.assign' => ['Sponsored Ads Leads', 'Assign and reassign leads to sales managers'],
+        'leads.followup' => ['Sponsored Ads Leads', 'Record follow-ups on assigned leads'],
+        'leads.convert' => ['Sponsored Ads Leads', 'Convert leads into registered patients'],
+        'leads.delete' => ['Sponsored Ads Leads', 'Delete test or duplicate leads'],
+        'leads.reports' => ['Sponsored Ads Leads', 'View all leads and performance reports'],
     ];
 
     /** Default grants per role. Admin always has everything. */
@@ -66,6 +74,10 @@ class Permissions
             'patients.view', 'patients.register', 'patients.edit', 'appointments.manage',
             'reception.queue', 'billing.view', 'payments.record', 'receipts.print',
             'clinical.view', 'messaging.send',
+            'self.attendance', 'self.leave', 'self.payslip', 'self.requests',
+        ],
+        'SALES_MANAGER' => [
+            'leads.view', 'leads.create', 'leads.followup', 'leads.convert',
             'self.attendance', 'self.leave', 'self.payslip', 'self.requests',
         ],
     ];
@@ -110,6 +122,13 @@ class Permissions
         'board.publish' => ['board.view'],
         'board.manage' => ['board.view'],
         'board.reports' => ['board.view'],
+        'leads.create' => ['leads.view'],
+        'leads.update' => ['leads.view'],
+        'leads.assign' => ['leads.view'],
+        'leads.followup' => ['leads.view'],
+        'leads.convert' => ['leads.view'],
+        'leads.delete' => ['leads.view'],
+        'leads.reports' => ['leads.view'],
     ];
 
     /** Keys that grant the given key through IMPLIED. */

@@ -20,6 +20,10 @@ class User extends Authenticatable
 
     public const ROLE_RECEPTIONIST = 'RECEPTIONIST';
 
+    public const ROLE_SALES_MANAGER = 'SALES_MANAGER';
+
+    public const ROLES = [self::ROLE_ADMIN, self::ROLE_RECEPTIONIST, self::ROLE_CLINIC_STAFF, self::ROLE_SALES_MANAGER];
+
     public const STATUS_ACTIVE = 'active';
 
     public const STATUS_INACTIVE = 'inactive';

@@ -29,7 +29,7 @@ class AccessController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:200', 'email' => 'required|email|unique:users,email',
             'password' => ['required', Password::defaults()],
-            'role' => ['required', Rule::in([User::ROLE_ADMIN, User::ROLE_RECEPTIONIST, User::ROLE_CLINIC_STAFF])],
+            'role' => ['required', Rule::in(User::ROLES)],
             'phone' => 'nullable|string|max:30',
             'department_id' => 'nullable|exists:departments,id',
             'job_position_id' => 'nullable|exists:job_positions,id',
@@ -59,7 +59,7 @@ class AccessController extends Controller
 
     public function updateRole(Request $request, User $user)
     {
-        $data = $request->validate(['role' => ['required', Rule::in([User::ROLE_ADMIN, User::ROLE_RECEPTIONIST, User::ROLE_CLINIC_STAFF])]]);
+        $data = $request->validate(['role' => ['required', Rule::in(User::ROLES)]]);
         abort_if($user->id === auth()->id() && $data['role'] !== User::ROLE_ADMIN, 422, 'You cannot remove your own admin role.');
         $user->update(['role' => $data['role']]);
         AuditLogger::log('staff.role_changed', 'user', $user->id, ['role' => null], ['role' => $data['role']]);

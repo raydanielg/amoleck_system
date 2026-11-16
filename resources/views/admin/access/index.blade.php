@@ -9,7 +9,7 @@
                     <td class="fw-semibold">{{ $u->name }}</td><td class="small">{{ $u->email }}</td>
                     <td>
                         <form method="POST" action="{{ route('admin.access.users.role', $u) }}" class="d-flex gap-1">@csrf @method('PUT')
-                            <select name="role" class="form-select form-select-sm" style="width:150px">@foreach (['ADMIN','RECEPTIONIST','CLINIC_STAFF'] as $r)<option @selected($u->role===$r)>{{ $r }}</option>@endforeach</select>
+                            <select name="role" class="form-select form-select-sm" style="width:150px">@foreach (\App\Models\User::ROLES as $r)<option @selected($u->role===$r)>{{ $r }}</option>@endforeach</select>
                             <button class="btn btn-sm btn-outline-secondary">Set</button>
                         </form>
                     </td>
@@ -51,7 +51,7 @@
             <div class="col-12"><label class="form-label">Full Name *</label><input name="name" class="form-control" required></div>
             <div class="col-12"><label class="form-label">Email *</label><input type="email" name="email" class="form-control" required></div>
             <div class="col-12"><label class="form-label">Password * <span class="text-muted small">(user must change at first login)</span></label><input type="password" name="password" class="form-control" required></div>
-            <div class="col-12"><label class="form-label">Role *</label><select name="role" class="form-select"><option value="RECEPTIONIST">Receptionist</option><option value="CLINIC_STAFF">Clinic Staff</option><option value="ADMIN">Admin</option></select></div>
+            <div class="col-12"><label class="form-label">Role *</label><select name="role" class="form-select"><option value="RECEPTIONIST">Receptionist</option><option value="CLINIC_STAFF">Clinic Staff</option><option value="SALES_MANAGER">Sales Manager</option><option value="ADMIN">Admin</option></select></div>
             <div class="col-6"><label class="form-label">Phone</label><input name="phone" class="form-control"></div>
             <div class="col-6"><label class="form-label">Department</label><select name="department_id" class="form-select"><option value="">—</option>@foreach (\App\Models\Department::where('is_active',true)->get() as $d)<option value="{{ $d->id }}">{{ $d->name }}</option>@endforeach</select></div>
             <div class="col-6"><label class="form-label">Position</label><select name="job_position_id" class="form-select"><option value="">—</option>@foreach (\App\Models\JobPosition::where('is_active',true)->get() as $p)<option value="{{ $p->id }}">{{ $p->title }}</option>@endforeach</select></div>

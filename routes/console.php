@@ -16,3 +16,6 @@ Schedule::command('messages:process --balance')->hourly()->withoutOverlapping();
 
 // Drain any queued jobs — needed on shared hosting with no queue daemon
 Schedule::command('queue:work --stop-when-empty --max-time=55')->everyMinute()->withoutOverlapping();
+
+// Lead follow-up reminders to sales managers every morning (EAT)
+Schedule::command('leads:remind')->dailyAt('07:00')->timezone('Africa/Dar_es_Salaam');

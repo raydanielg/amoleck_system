@@ -205,6 +205,14 @@
                         </a>
                     </li>
                 @endif
+                @if (auth()->user()->hasPermission('leads.view'))
+                    <li class="nav-item">
+                        <a href="{{ route('leads.dashboard') }}" class="nav-link {{ request()->routeIs('leads.*') ? 'active' : '' }}">
+                            <i class="nav-icon hgi-stroke hgi-megaphone-01"></i>
+                            <p>{{ __('Ads Leads') }}</p>
+                        </a>
+                    </li>
+                @endif
 
                 @if ($isAdmin)
                     <li class="nav-header text-uppercase small text-muted mt-1">{{ __('Operations') }}</li>
